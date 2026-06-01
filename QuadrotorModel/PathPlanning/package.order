@@ -1,0 +1,8 @@
+CirclePath
+ClimbPath
+EightPath
+PartialPositionCommand
+CircularTrajectory
+STrajectory
+SquareWaypointTrajectory
+SharpTurnTrajectory

@@ -11,7 +11,8 @@ using Statistics
 
 # ========== 0. 用户配置区 ==========
 
-MODEL_FILE = "E:/Program/中国软件杯/QuadrotorModel_split/QuadrotorModel_split/QuadrotorModel/package.mo"
+PROJECT_ROOT = abspath(get(ENV, "QUADROTOR_PROJECT_ROOT", dirname(@__DIR__)))
+MODEL_FILE = abspath(get(ENV, "QUADROTOR_MODEL_FILE", joinpath(PROJECT_ROOT, "QuadrotorModel", "package.mo")))
 
 # 改成你要运行的场景模型，例如：
 # MODEL = "QuadrotorModel.Examples.Example1"

@@ -16,3 +16,8 @@ YawCommandController
 PositionMeasurementNoiseExperiment
 AttitudeMeasurementNoiseExperiment
 MeasurementDelayExperiment
+FormationTriangleFigure8
+FormationDiamondCircle
+FormationVShapeSpiral
+FormationSwitching
+FormationWindDisturbance

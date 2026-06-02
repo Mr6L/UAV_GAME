@@ -28,10 +28,7 @@ model SquareWaypointTracking "方形航点轨迹跟踪实验"
   QuadrotorModel.Sensors.Sensors sensors1_1 
     annotation (Placement(transformation(origin = {2, -64.5},
       extent = {{21, -19}, {-21, 19}})));
-  QuadrotorModel.Blocks.Controller.Controller controller3_2(
-    PID7(KP = 8, KI = 6, KD = 4),
-    PID3(KP = 1.5),
-    PID4(KP = 1.5)) 
+  QuadrotorModel.Blocks.Controller.ActiveController controller3_2 
     annotation (Placement(transformation(origin = {-71, 9},
       extent = {{-25, -25}, {25, 25}})));
   Modelica.Mechanics.Rotational.Sensors.SpeedSensor speedSensor[4] 
@@ -39,6 +36,7 @@ model SquareWaypointTracking "方形航点轨迹跟踪实验"
       extent = {{-10, -10}, {10, 10}})));
 
 equation
+  controller3_2.yaw_command = 0;
   connect(trajectory.position_command, controller3_2.position_command) 
     annotation (Line(points = {{-132, 24}, {-99, 24}},
       color = {0, 0, 127}, thickness = 0.8));

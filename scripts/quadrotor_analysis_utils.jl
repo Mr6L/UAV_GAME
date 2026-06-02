@@ -1,17 +1,21 @@
 using SysplorerAPI
 using Statistics
 using Printf
+using Sockets
 
-const MODEL_FILE = "E:/Program/中国软件杯/QuadrotorModel_split/QuadrotorModel_split/QuadrotorModel/package.mo"
-const PROJECT_ROOT = dirname(dirname(MODEL_FILE))
-const RESULT_DIR = joinpath(PROJECT_ROOT, "results")
-const SYSPLORER_ROOT = "E:/Program/MWORKS_Sysplorer/Sysplorer 2026a"
-const SYSPLORER_EXE = SYSPLORER_ROOT * "/Bin64/mworks.exe"
-const SYSPLORER_SIM_BIN64 = SYSPLORER_ROOT * "/Simulator/Bin64"
-const SYSPLORER_MINGW64_BIN = SYSPLORER_ROOT * "/Simulator/mingw/15.2.0/mingw64/bin"
+const PROJECT_ROOT = abspath(get(ENV, "QUADROTOR_PROJECT_ROOT", dirname(@__DIR__)))
+const MODEL_FILE = abspath(get(ENV, "QUADROTOR_MODEL_FILE", joinpath(PROJECT_ROOT, "QuadrotorModel", "package.mo")))
+const RESULT_DIR = abspath(get(ENV, "QUADROTOR_RESULT_DIR", joinpath(PROJECT_ROOT, "results")))
+const CONTROLLER_ID = get(ENV, "QUADROTOR_CONTROLLER_ID", "baseline_pid")
+const SYSPLORER_ROOT = abspath(get(ENV, "QUADROTOR_SYSPLORER_ROOT", get(ENV, "SYSPLORER_ROOT", "E:/APP/Sysplorer 2026a")))
+const SYSPLORER_EXE = joinpath(SYSPLORER_ROOT, "Bin64", "mworks.exe")
+const SYSPLORER_SIM_BIN64 = joinpath(SYSPLORER_ROOT, "Simulator", "Bin64")
+const SYSPLORER_MINGW64_BIN = joinpath(SYSPLORER_ROOT, "Simulator", "mingw", "15.2.0", "mingw64", "bin")
 const ENABLE_PLOTS = lowercase(get(ENV, "QUADROTOR_ENABLE_PLOTS", "1")) in ["1", "true", "yes", "on"]
 const POSITION_LIMIT = 50.0
 const ANGLE_LIMIT = pi / 2
+const FORMATION_COLLISION_DISTANCE = parse(Float64, get(ENV, "QUADROTOR_COLLISION_DISTANCE", "0.5"))
+const FORMATION_UNSAFE_DISTANCE = parse(Float64, get(ENV, "QUADROTOR_UNSAFE_DISTANCE", "1.0"))
 
 function normalized_path(p::String)
     return lowercase(replace(abspath(replace(p, "/" => "\\")), "/" => "\\"))
@@ -21,7 +25,7 @@ function sysplorer_runtime_paths()
     return [
         SYSPLORER_SIM_BIN64,
         SYSPLORER_MINGW64_BIN,
-        SYSPLORER_ROOT * "/Bin64",
+        joinpath(SYSPLORER_ROOT, "Bin64"),
     ]
 end
 
@@ -223,9 +227,17 @@ function print_experiment_settings(model::String, settings::ExperimentSettings)
     end
 end
 
-function ensure_result_dir()
+function controller_result_root(controller_id::String=CONTROLLER_ID)
+    return joinpath(RESULT_DIR, controller_id)
+end
+
+function ensure_result_dir(scenario_name::String; controller_id::String=CONTROLLER_ID)
     mkpath(RESULT_DIR)
-    return RESULT_DIR
+    result_root = controller_result_root(controller_id)
+    mkpath(result_root)
+    result_dir = joinpath(result_root, scenario_name)
+    mkpath(result_dir)
+    return result_dir
 end
 
 function existing_sysplorer_ports()
@@ -259,15 +271,46 @@ function path_with_sysplorer_runtime()
     return current
 end
 
-function wait_for_port(target_port::Int; timeout_s=30.0)
+function port_available(port::Int)
+    server = nothing
+    try
+        server = listen(ip"127.0.0.1", port)
+        return true
+    catch err
+        return false
+    finally
+        server !== nothing && close(server)
+    end
+end
+
+function find_available_start_port()
+    configured = get(ENV, "QUADROTOR_SYSPLORER_START_PORT", "")
+    if configured != ""
+        port = parse(Int, configured)
+        port_available(port) || error("Configured QUADROTOR_SYSPLORER_START_PORT is not available: $(port)")
+        return port
+    end
+
+    for port in 8000:8100
+        port_available(port) && return port
+    end
+    error("No available local TCP port found in 8000:8100 for Sysplorer startup.")
+end
+
+function wait_for_tcp_port(target_port::Int; timeout_s=30.0)
     deadline = time() + timeout_s
-    latest = Int[]
     while time() < deadline
-        latest = existing_sysplorer_ports()
-        target_port in latest && return true, latest
+        sock = nothing
+        try
+            sock = connect(ip"127.0.0.1", target_port)
+            return true
+        catch err
+        finally
+            sock !== nothing && close(sock)
+        end
         sleep(0.5)
     end
-    return false, latest
+    return false
 end
 
 function launch_sysplorer_process(port::Int)
@@ -283,16 +326,14 @@ function launch_sysplorer_process(port::Int)
 end
 
 function start_and_connect_sysplorer()
-    before = existing_sysplorer_ports()
-    port = Int(SysplorerAPI.findAvaiablePort())
-    println("Sysplorer ports before start: ", before)
+    port = find_available_start_port()
     println("Starting Sysplorer: ", SYSPLORER_EXE)
-    println("Requested Sysplorer port: ", port)
+    println("Selected Sysplorer port: ", port)
 
     launch_sysplorer_process(port)
-    ready, ports = wait_for_port(port)
-    ready || error("Sysplorer launch returned, but requested Sysplorer port was not found. Ports: $(ports)")
-    println("Sysplorer ports after start: ", ports)
+    ready = wait_for_tcp_port(port)
+    ready || error("Sysplorer launch returned, but TCP port $(port) did not open.")
+    println("Sysplorer TCP port is open: ", port)
     println("Connecting Sysplorer port: ", port)
     SysplorerAPI.ConnectSysplorerEx("127.0.0.1", port)
     return port
@@ -877,10 +918,30 @@ function read_metric_value(filename::String, wanted::String)
     return NaN
 end
 
-function add_baseline_ratios!(rows, current_metrics::Vector{Metric})
+function baseline_scenario_for_perturbation(scenario_name::String)
+    if occursin("inertia", scenario_name)
+        return "step_response_x"
+    elseif occursin("mass", scenario_name) || occursin("lift_coefficient", scenario_name)
+        return "step_response_z"
+    end
+    return "step_response_z"
+end
+
+function scenario_metrics_file(scenario_name::String; controller_id::String=CONTROLLER_ID)
+    return joinpath(controller_result_root(controller_id), scenario_name, scenario_name * "_metrics.csv")
+end
+
+function legacy_scenario_metrics_file(scenario_name::String)
+    return joinpath(RESULT_DIR, scenario_name, scenario_name * "_metrics.csv")
+end
+
+function add_baseline_ratios!(rows, current_metrics::Vector{Metric};
+                              baseline_scenario::String="example1_climb",
+                              controller_id::String=CONTROLLER_ID)
     baseline_files = [
-        joinpath(RESULT_DIR, "baseline_example1_metrics.csv"),
-        joinpath(RESULT_DIR, "example1_climb_metrics.csv"),
+        scenario_metrics_file(baseline_scenario; controller_id=controller_id),
+        legacy_scenario_metrics_file(baseline_scenario),
+        joinpath(RESULT_DIR, baseline_scenario * "_metrics.csv"),
     ]
     baseline = ""
     for f in baseline_files
@@ -890,11 +951,13 @@ function add_baseline_ratios!(rows, current_metrics::Vector{Metric})
         end
     end
     if baseline == ""
-        println("Baseline metrics file not found; skipping performance retention ratios.")
+        println("Baseline metrics file not found for $(baseline_scenario); skipping performance retention ratios.")
         add_metric!(rows, "performance_retention_note", "baseline metrics file not found")
+        add_metric!(rows, "performance_retention_baseline_scenario", baseline_scenario)
         return
     end
 
+    add_metric!(rows, "performance_retention_baseline_scenario", baseline_scenario)
     lookup = Dict(r.name => r.value for r in current_metrics)
     pairs = [
         ("rmse_degradation_ratio", "position_error_norm_rmse"),
@@ -905,13 +968,15 @@ function add_baseline_ratios!(rows, current_metrics::Vector{Metric})
         base = read_metric_value(baseline, metric_name)
         cur = haskey(lookup, metric_name) ? lookup[metric_name] : NaN
         value = (!isfinite(base) || abs(base) < 1e-12) ? NaN : cur / base
-        add_metric!(rows, ratio_name, value, notes="baseline=$(basename(baseline))")
+        add_metric!(rows, ratio_name, value, notes="baseline=$(relpath(baseline, RESULT_DIR))")
     end
 end
 
-function compute_perturbation_metrics(data, t)
+function compute_perturbation_metrics(data, t, scenario_name::String; controller_id::String=CONTROLLER_ID)
     rows = compute_tracking_metrics(data, t)
-    add_baseline_ratios!(rows, rows)
+    add_baseline_ratios!(rows, rows;
+                         baseline_scenario=baseline_scenario_for_perturbation(scenario_name),
+                         controller_id=controller_id)
     return rows
 end
 
@@ -1022,6 +1087,499 @@ function compute_delay_metrics(data, t)
         add_metric!(rows, "delay_response_note", "unstable response; ordinary settling metrics are not interpreted")
     end
     return rows
+end
+
+function drone_position_candidates(drone::Int, axis::Int)
+    return [
+        "drone$(drone).position[$axis]",
+        "drone$(drone).sensors.PosMea[$axis]",
+        "drone$(drone).controller.position[$axis]",
+        "drone$(drone).quadChassis.body.r_0[$axis]",
+        "drone$(drone).quadChassis.body.frame_a.r_0[$axis]",
+    ]
+end
+
+function drone_command_candidates(drone::Int, axis::Int)
+    return [
+        "drone$(drone).position_command[$axis]",
+        "command.position_command[$drone,$axis]",
+        "command.position_command[$drone, $axis]",
+        "drone$(drone).controller.position_command[$axis]",
+    ]
+end
+
+function formation_force_candidates(axis::Int)
+    return [
+        "wind.force[$axis]",
+        "drone1.external_force[$axis]",
+        "drone1.disturbanceForce.force[$axis]",
+    ]
+end
+
+function read_formation_group(vars::Vector{String}, n::Int, candidate_fn, label::String; core=false, var_file="")
+    names = [String[] for _ in 1:n]
+    data = [Vector{Vector{Float64}}() for _ in 1:n]
+    for drone in 1:n
+        for axis in 1:3
+            candidates = candidate_fn(drone, axis)
+            name = core ? pickvar(vars, candidates; label="$label drone$(drone)[$axis]", var_file=var_file) :
+                          pickvar_optional(vars, candidates; label="$label drone$(drone)[$axis]")
+            name == "" && continue
+            push!(names[drone], name)
+            push!(data[drone], getv(name))
+        end
+    end
+    return names, data
+end
+
+function read_formation_signals(vars::Vector{String}, n::Int, var_file::String)
+    pos_names, positions = read_formation_group(vars, n, drone_position_candidates, "actual position"; core=true, var_file=var_file)
+    cmd_names, commands = read_formation_group(vars, n, drone_command_candidates, "position command"; core=true, var_file=var_file)
+    force_names, force = read_group(vars, formation_force_candidates, "formation external force")
+    return Dict{String,Any}(
+        "n" => n,
+        "position_names" => pos_names,
+        "positions" => positions,
+        "command_names" => cmd_names,
+        "commands" => commands,
+        "force_names" => force_names,
+        "force" => force,
+    )
+end
+
+function norm3(ax, ay, az)
+    return sqrt.(ax .^ 2 .+ ay .^ 2 .+ az .^ 2)
+end
+
+function tracking_error_norms(data::Dict{String,Any})
+    n = data["n"]
+    positions = data["positions"]
+    commands = data["commands"]
+    errs = Vector{Vector{Float64}}()
+    for drone in 1:n
+        push!(errs, norm3(commands[drone][1] .- positions[drone][1],
+                         commands[drone][2] .- positions[drone][2],
+                         commands[drone][3] .- positions[drone][3]))
+    end
+    return errs
+end
+
+function formation_error_norms(data::Dict{String,Any})
+    n = data["n"]
+    positions = data["positions"]
+    commands = data["commands"]
+    leader_pos = positions[1]
+    leader_cmd = commands[1]
+    errs = Vector{Vector{Float64}}()
+    for drone in 2:n
+        ex = (positions[drone][1] .- leader_pos[1]) .- (commands[drone][1] .- leader_cmd[1])
+        ey = (positions[drone][2] .- leader_pos[2]) .- (commands[drone][2] .- leader_cmd[2])
+        ez = (positions[drone][3] .- leader_pos[3]) .- (commands[drone][3] .- leader_cmd[3])
+        push!(errs, norm3(ex, ey, ez))
+    end
+    return errs
+end
+
+function aggregate_rms_by_time(series::Vector{Vector{Float64}})
+    isempty(series) && return Float64[]
+    n = minimum(length.(series))
+    out = zeros(n)
+    for i in 1:n
+        out[i] = sqrt(mean([s[i]^2 for s in series]))
+    end
+    return out
+end
+
+function collect_series_values(series::Vector{Vector{Float64}})
+    values = Float64[]
+    for s in series
+        append!(values, s)
+    end
+    return values
+end
+
+function pairwise_distance_series(data::Dict{String,Any})
+    n = data["n"]
+    positions = data["positions"]
+    names = String[]
+    distances = Vector{Vector{Float64}}()
+    for i in 1:n-1
+        for j in i+1:n
+            push!(names, "distance_drone$(i)_drone$(j)")
+            push!(distances, norm3(positions[i][1] .- positions[j][1],
+                                  positions[i][2] .- positions[j][2],
+                                  positions[i][3] .- positions[j][3]))
+        end
+    end
+    if isempty(distances)
+        return names, distances, Float64[], "", NaN, NaN
+    end
+
+    npts = minimum(length.(distances))
+    min_by_time = zeros(npts)
+    for k in 1:npts
+        min_by_time[k] = minimum(d[k] for d in distances)
+    end
+
+    best_pair = ""
+    best_distance = Inf
+    best_index = 1
+    for i in eachindex(distances)
+        value, idx = findmin(distances[i])
+        if value < best_distance
+            best_distance = value
+            best_index = idx
+            best_pair = names[i]
+        end
+    end
+    return names, distances, min_by_time, best_pair, best_index, best_distance
+end
+
+function tail_trend_bad(signal; min_value=0.5, ratio=1.5)
+    length(signal) >= 30 || return false
+    n = length(signal)
+    k = max(5, floor(Int, n * 0.1))
+    prev = mean(signal[max(1, n - 2k + 1):max(1, n - k)])
+    last = mean(signal[n - k + 1:n])
+    return last > max(1e-6, ratio * prev) && last > min_value
+end
+
+function time_index_at_or_after(t, value)
+    idx = findfirst(x -> x >= value, t)
+    return idx === nothing ? length(t) : idx
+end
+
+function time_index_at_or_before(t, value)
+    idx = findlast(x -> x <= value, t)
+    return idx === nothing ? 1 : idx
+end
+
+function time_window(t, start_time, end_time)
+    start_idx = time_index_at_or_after(t, start_time)
+    end_idx = isfinite(end_time) ? time_index_at_or_before(t, end_time) : length(t)
+    end_idx = max(start_idx, end_idx)
+    return start_idx:end_idx
+end
+
+function first_hold_time(t, signal, start_time, threshold; hold_time=2.0, end_time=Inf)
+    start_idx = time_index_at_or_after(t, start_time)
+    dt = length(t) > 1 ? median(diff(t)) : hold_time
+    hold_n = max(1, ceil(Int, hold_time / max(dt, 1e-6)))
+    for i in start_idx:length(t)
+        t[i] > end_time && break
+        j = min(length(t), i + hold_n - 1)
+        t[j] > end_time && break
+        all(signal[i:j] .<= threshold) && return t[i]
+    end
+    return NaN
+end
+
+function add_switch_metrics!(rows, t, formation_error, spacing, switch_times, switch_durations)
+    isempty(switch_times) && return
+    threshold = max(0.3, 0.15 * spacing)
+    add_metric!(rows, "switch_completion_threshold", threshold, unit="m")
+
+    first_start = switch_times[1]
+    last_end = switch_times[end] + switch_durations[end]
+    switch_range = time_window(t, first_start, Inf)
+    add_metric!(rows, "switching_formation_error_max", maximum(formation_error[switch_range]), unit="m")
+
+    for i in eachindex(switch_times)
+        start_time = switch_times[i]
+        duration = switch_durations[i]
+        next_start = i < length(switch_times) ? switch_times[i + 1] : Inf
+        ready_time = first_hold_time(t, formation_error, start_time + duration, threshold; hold_time=2.0, end_time=next_start)
+        prefix = i == 1 ? "first_switch" : i == 2 ? "second_switch" : "switch$(i)"
+        add_metric!(rows, "$(prefix)_completion_abs_time", ready_time, unit="s")
+        add_metric!(rows, "$(prefix)_completion_time", isnan(ready_time) ? NaN : ready_time - start_time, unit="s")
+        add_metric!(rows, "$(prefix)_settling_after_reference_end", isnan(ready_time) ? NaN : ready_time - (start_time + duration), unit="s")
+        local_range = time_window(t, start_time, next_start)
+        add_metric!(rows, "$(prefix)_formation_error_max", maximum(formation_error[local_range]), unit="m")
+    end
+
+    tail_start = time_index_at_or_after(t, last_end)
+    add_metric!(rows, "post_switch_tail_formation_error", mean(formation_error[tail_start:end]), unit="m")
+end
+
+function add_formation_disturbance_metrics!(rows, data, t, formation_error, spacing; disturbance_start=nothing)
+    add_metric!(rows, "formation_disturbance_scope", "common_force_all_uavs",
+                notes="current formation wind scenario applies the same force to every UAV")
+    force = data["force"]
+    fn = force_norm(force)
+    start_idx = nothing
+    if length(fn) > 0 && maximum(fn) > 0
+        threshold = max(1e-8, 0.05 * maximum(fn))
+        start_idx = findfirst(v -> v > threshold, fn)
+        peak, peak_idx = findmax(fn)
+        if start_idx !== nothing
+            add_metric!(rows, "formation_disturbance_start_time", t[start_idx], unit="s")
+            add_metric!(rows, "formation_disturbance_peak", peak, unit="N")
+            add_metric!(rows, "formation_disturbance_peak_time", t[peak_idx], unit="s")
+            length(force) >= 3 && add_metric!(rows, "formation_disturbance_direction_x", force[1][peak_idx], unit="N")
+            length(force) >= 3 && add_metric!(rows, "formation_disturbance_direction_y", force[2][peak_idx], unit="N")
+            length(force) >= 3 && add_metric!(rows, "formation_disturbance_direction_z", force[3][peak_idx], unit="N")
+        end
+    elseif disturbance_start !== nothing
+        start_idx = time_index_at_or_after(t, disturbance_start)
+        add_metric!(rows, "formation_disturbance_start_time", t[start_idx], unit="s", notes="configured start time")
+    end
+
+    start_idx === nothing && return
+    band = max(0.3, 0.15 * spacing)
+    add_metric!(rows, "post_disturbance_formation_error_max", maximum(formation_error[start_idx:end]), unit="m")
+    add_metric!(rows, "formation_disturbance_recovery_time", recovery_time(t, formation_error, start_idx; band=band), unit="s")
+    add_metric!(rows, "post_recovery_tail_formation_error", mean(formation_error[tail_range(length(formation_error))]), unit="m")
+    add_metric!(rows, "sustained_wind_steady_formation_error", mean(formation_error[tail_range(length(formation_error))]), unit="m")
+end
+
+function compute_formation_metrics(data, t, scenario_type::String; spacing=2.0,
+                                   switch_times=Float64[], switch_durations=Float64[],
+                                   disturbance_start=nothing,
+                                   collision_distance=FORMATION_COLLISION_DISTANCE,
+                                   unsafe_distance=FORMATION_UNSAFE_DISTANCE)
+    rows = Metric[]
+    n = data["n"]
+    tracking = tracking_error_norms(data)
+    formation_followers = formation_error_norms(data)
+    formation_error = aggregate_rms_by_time(formation_followers)
+    formation_values = collect_series_values(formation_followers)
+    dist_names, distances, min_dist, closest_pair, closest_idx, closest_distance = pairwise_distance_series(data)
+
+    add_metric!(rows, "formation_drone_count", n)
+    add_metric!(rows, "formation_spacing_nominal", spacing, unit="m")
+    add_metric!(rows, "collision_distance_threshold", collision_distance, unit="m")
+    add_metric!(rows, "unsafe_distance_threshold", unsafe_distance, unit="m")
+
+    add_metric!(rows, "leader_tracking_rmse", rmse(tracking[1]), unit="m")
+    add_metric!(rows, "leader_tracking_max", maximum(tracking[1]), unit="m")
+    add_metric!(rows, "leader_tracking_final", tracking[1][end], unit="m")
+
+    follower_rmse = Float64[]
+    follower_max = Float64[]
+    for drone in 2:n
+        terr = tracking[drone]
+        push!(follower_rmse, rmse(terr))
+        push!(follower_max, maximum(terr))
+        add_metric!(rows, "follower$(drone)_tracking_rmse", rmse(terr), unit="m")
+        add_metric!(rows, "follower$(drone)_tracking_max", maximum(terr), unit="m")
+        ferr = formation_followers[drone - 1]
+        add_metric!(rows, "follower$(drone)_formation_error_rmse", rmse(ferr), unit="m")
+        add_metric!(rows, "follower$(drone)_formation_error_max", maximum(ferr), unit="m")
+    end
+    add_metric!(rows, "follower_tracking_rmse_mean", mean(follower_rmse), unit="m")
+    add_metric!(rows, "follower_tracking_max", maximum(follower_max), unit="m")
+
+    add_metric!(rows, "formation_error_rmse", rms(formation_values), unit="m")
+    add_metric!(rows, "formation_error_max", maximum(formation_values), unit="m")
+    add_metric!(rows, "formation_error_final", formation_error[end], unit="m")
+    add_metric!(rows, "formation_error_tail_mean", mean(formation_error[tail_range(length(formation_error))]), unit="m")
+
+    add_metric!(rows, "min_inter_uav_distance", closest_distance, unit="m")
+    add_metric!(rows, "closest_pair", closest_pair)
+    add_metric!(rows, "closest_pair_time", isempty(min_dist) ? NaN : t[closest_idx], unit="s")
+    add_metric!(rows, "collision_flag", closest_distance < collision_distance)
+    add_metric!(rows, "unsafe_spacing_flag", closest_distance < unsafe_distance)
+
+    position_arrays = Vector{Vector{Float64}}()
+    for drone in data["positions"]
+        append!(position_arrays, drone)
+    end
+    finite = finite_ok([position_arrays; [formation_error]; distances])
+    max_position_abs = maximum([maxabs(a) for a in position_arrays])
+    divergence = maximum(formation_values) > 2 * spacing || tail_trend_bad(formation_error)
+    add_metric!(rows, "formation_divergence_flag", divergence)
+    add_metric!(rows, "max_position_abs", max_position_abs, unit="m")
+    add_metric!(rows, "stable", finite && max_position_abs <= POSITION_LIMIT && !divergence && closest_distance >= collision_distance)
+
+    if scenario_type == "formation_switch"
+        add_switch_metrics!(rows, t, formation_error, spacing, switch_times, switch_durations)
+        if !isempty(min_dist)
+            switch_range = time_window(t, isempty(switch_times) ? t[1] : switch_times[1], Inf)
+            add_metric!(rows, "switching_min_inter_uav_distance", minimum(min_dist[switch_range]), unit="m")
+        end
+    elseif scenario_type == "formation_disturbance"
+        add_formation_disturbance_metrics!(rows, data, t, formation_error, spacing; disturbance_start=disturbance_start)
+    end
+
+    return rows
+end
+
+function build_formation_timeseries(data)
+    names = String[]
+    arrays = Vector{Vector{Float64}}()
+    n = data["n"]
+    axis_names = ["x", "y", "z"]
+    for drone in 1:n
+        for axis in 1:3
+            push!(names, "drone$(drone)_$(axis_names[axis])")
+            push!(arrays, data["positions"][drone][axis])
+            push!(names, "drone$(drone)_$(axis_names[axis])_cmd")
+            push!(arrays, data["commands"][drone][axis])
+        end
+    end
+
+    tracking = tracking_error_norms(data)
+    for drone in 1:n
+        push!(names, "drone$(drone)_tracking_error")
+        push!(arrays, tracking[drone])
+    end
+
+    follower_errors = formation_error_norms(data)
+    formation_error = aggregate_rms_by_time(follower_errors)
+    for i in eachindex(follower_errors)
+        push!(names, "drone$(i + 1)_formation_error")
+        push!(arrays, follower_errors[i])
+    end
+    push!(names, "formation_error_rms")
+    push!(arrays, formation_error)
+
+    dist_names, distances, min_dist, _, _, _ = pairwise_distance_series(data)
+    for i in eachindex(distances)
+        push!(names, dist_names[i])
+        push!(arrays, distances[i])
+    end
+    if !isempty(min_dist)
+        push!(names, "min_inter_uav_distance")
+        push!(arrays, min_dist)
+    end
+
+    if length(data["force"]) > 0
+        for i in eachindex(data["force"])
+            push!(names, "formation_force_$(i)")
+            push!(arrays, data["force"][i])
+        end
+    end
+    return names, arrays
+end
+
+function plot_vertical_markers(xs, ymin, ymax)
+    for x in xs
+        plot([x, x], [ymin, ymax])
+    end
+end
+
+function plot_formation_trajectories(data, scenario_name)
+    n = data["n"]
+    figure()
+    try
+        plot3(data["positions"][1][1], data["positions"][1][2], data["positions"][1][3]); hold("on")
+        for drone in 2:n
+            plot3(data["positions"][drone][1], data["positions"][drone][2], data["positions"][drone][3])
+        end
+        xlabel("x / m"); ylabel("y / m"); zlabel("z / m")
+        title("3D Formation Trajectories - " * scenario_name)
+    catch err
+        println("[warning] 3D plot failed; falling back to XY trajectory plot: ", err)
+        plot(data["positions"][1][1], data["positions"][1][2]); hold("on")
+        for drone in 2:n
+            plot(data["positions"][drone][1], data["positions"][drone][2])
+        end
+        xlabel("x / m"); ylabel("y / m")
+        title("XY Formation Trajectories - " * scenario_name)
+    end
+    grid("on")
+    legend(["drone$(i)" for i in 1:n])
+end
+
+function plot_formation_outputs(t, data, scenario_name; switch_times=Float64[], disturbance_start=nothing)
+    follower_errors = formation_error_norms(data)
+    formation_error = aggregate_rms_by_time(follower_errors)
+    figure()
+    plot(t, formation_error); hold("on")
+    for i in eachindex(follower_errors)
+        plot(t, follower_errors[i])
+    end
+    if !isempty(switch_times)
+        ymax = maximum(formation_error)
+        plot_vertical_markers(switch_times, 0.0, ymax)
+    end
+    if disturbance_start !== nothing
+        ymax = maximum(formation_error)
+        plot_vertical_markers([disturbance_start], 0.0, ymax)
+    end
+    grid("on")
+    xlabel("Time / s")
+    ylabel("Formation error / m")
+    legend(["formation_rms"; ["drone$(i + 1)" for i in eachindex(follower_errors)]])
+    title("Formation Error - " * scenario_name)
+
+    tracking = tracking_error_norms(data)
+    figure()
+    plot(t, tracking[1]); hold("on")
+    for drone in 2:data["n"]
+        plot(t, tracking[drone])
+    end
+    grid("on")
+    xlabel("Time / s")
+    ylabel("Tracking error / m")
+    legend(["drone$(i)" for i in 1:data["n"]])
+    title("Leader/Follower Tracking Error - " * scenario_name)
+
+    dist_names, distances, min_dist, _, _, _ = pairwise_distance_series(data)
+    isempty(distances) && return
+    figure()
+    plot(t, min_dist); hold("on")
+    for d in distances
+        plot(t, d)
+    end
+    grid("on")
+    xlabel("Time / s")
+    ylabel("Distance / m")
+    legend(["min_distance"; dist_names])
+    title("Inter-UAV Distances - " * scenario_name)
+
+    length(data["force"]) > 0 && plot_group(t, data["force"], ["Fx", "Fy", "Fz"],
+                                             "Formation Disturbance Force - " * scenario_name, "Force / N")
+end
+
+function print_formation_report(model, scenario_name, scenario_type, data, rows, files)
+    report_data = Dict{String,Any}(
+        "pos_names" => reduce(vcat, data["position_names"]),
+        "pos_ref_names" => reduce(vcat, data["command_names"]),
+    )
+    print_report(model, scenario_name, scenario_type, report_data, rows, files)
+end
+
+function run_formation_analysis(model::String, scenario_name::String, scenario_type::String; n::Int,
+                                spacing=2.0, switch_times=Float64[], switch_durations=Float64[],
+                                disturbance_start=nothing,
+                                collision_distance=FORMATION_COLLISION_DISTANCE,
+                                unsafe_distance=FORMATION_UNSAFE_DISTANCE,
+                                controller_id::String=CONTROLLER_ID)
+    result_dir = ensure_result_dir(scenario_name; controller_id=controller_id)
+    connect_and_open_model()
+    run_model_with_saved_settings(model)
+    println("Reading result variable list ...")
+    vars, var_file = get_result_variables_and_save(result_dir, scenario_name)
+    println("Reading time vector ...")
+    t = getv("time")
+
+    println("Reading formation signals ...")
+    data = read_formation_signals(vars, n, var_file)
+    println("Computing formation metrics ...")
+    rows = compute_formation_metrics(data, t, scenario_type; spacing=spacing,
+                                     switch_times=switch_times,
+                                     switch_durations=switch_durations,
+                                     disturbance_start=disturbance_start,
+                                     collision_distance=collision_distance,
+                                     unsafe_distance=unsafe_distance)
+
+    metrics_file = joinpath(result_dir, scenario_name * "_metrics.csv")
+    timeseries_file = joinpath(result_dir, scenario_name * "_timeseries.csv")
+    names, arrays = build_formation_timeseries(data)
+
+    println("Writing formation analysis CSV files ...")
+    write_metrics_csv(metrics_file, rows)
+    write_timeseries_csv(timeseries_file, t, names, arrays)
+
+    if ENABLE_PLOTS
+        plot_formation_trajectories(data, scenario_name)
+        plot_formation_outputs(t, data, scenario_name; switch_times=switch_times, disturbance_start=disturbance_start)
+    else
+        println("Plot generation skipped because QUADROTOR_ENABLE_PLOTS is disabled.")
+    end
+
+    print_formation_report(model, scenario_name, scenario_type, data, rows, [var_file, metrics_file, timeseries_file])
 end
 
 function plot_position_tracking(t, data, scenario_name)
@@ -1252,8 +1810,9 @@ function print_report(model, scenario_name, scenario_type, data, rows, files)
     println("=====================================")
 end
 
-function run_analysis(model::String, scenario_name::String, scenario_type::String; step_axis=:z)
-    result_dir = ensure_result_dir()
+function run_analysis(model::String, scenario_name::String, scenario_type::String; step_axis=:z,
+                      controller_id::String=CONTROLLER_ID)
+    result_dir = ensure_result_dir(scenario_name; controller_id=controller_id)
     connect_and_open_model()
     run_model_with_saved_settings(model)
     println("Reading result variable list ...")
@@ -1314,7 +1873,7 @@ function run_analysis(model::String, scenario_name::String, scenario_type::Strin
     elseif scenario_type == "trajectory"
         rows = compute_trajectory_metrics(data, t, scenario_name)
     elseif scenario_type == "perturbation"
-        rows = compute_perturbation_metrics(data, t)
+        rows = compute_perturbation_metrics(data, t, scenario_name; controller_id=controller_id)
     elseif scenario_type == "disturbance"
         rows = compute_disturbance_metrics(data, t, scenario_name)
     elseif scenario_type == "noise"

@@ -30,12 +30,13 @@ within QuadrotorModel.Examples;
       Sensors.Sensors sensors1_1 
         annotation (Placement(transformation(origin = {2.0000000000000018, -64.5},
           extent = {{21.0, -19.0}, {-21.0, 19.0}})));
-      Blocks.Controller.Controller controller3_2(PID7(KP=8,KI=6,KD=4),PID3(KP=1.5),PID4(KP=1.5)) 
+      Blocks.Controller.ActiveController controller3_2 
         annotation (Placement(transformation(origin = {-70.99999999999999, 9.0},
           extent = {{-25.000000000000014, -25.0}, {25.0, 25.0}})));
       Modelica.Mechanics.Rotational.Sensors.SpeedSensor speedSensor[4] annotation (Placement(transformation(origin = {80.0, 66.0},
         extent = {{-10.0, -10.0}, {10.0, 10.0}})));
       equation
+      controller3_2.yaw_command = 0;
       connect(actuator1_1.flange_a, quadChassisTest17_1.flange_a) 
         annotation (Line(origin = {27.0, 30.5},
           points = {{-15.0, 16.0}, {3.0, 16.0}, {3.0, -2.0}, {25.0, -2.0}},

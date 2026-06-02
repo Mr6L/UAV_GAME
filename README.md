@@ -4,10 +4,11 @@
 
 ## 使用方式
 
-在 MWORKS.Sysplorer / Syslab 中加载顶层文件：
+在 MWORKS.Sysplorer / Syslab 中加载顶层文件。不要在脚本或文档中写死个人电脑上的绝对路径，统一以仓库根目录 `UAV_GAME/` 为基准：
 
 ```julia
-OpenModelFile("E:/Program/中国软件杯/QuadrotorModel_split/QuadrotorModel_split/QuadrotorModel/package.mo")
+# 如果当前工作目录就是仓库根目录 UAV_GAME/
+OpenModelFile(joinpath(pwd(), "QuadrotorModel", "package.mo"))
 ```
 
 拆分后原有模型完整路径保持不变，例如：
@@ -18,7 +19,7 @@ QuadrotorModel.Examples.Example2
 QuadrotorModel.Examples.Example3
 ```
 
-因此原先通过 Syslab 调用的模型名一般不需要改，只需要把 `MODEL_FILE` 改成新的 `QuadrotorModel/package.mo` 路径。
+因此原先通过 Syslab 调用的模型名一般不需要改，只需要把 `MODEL_FILE` 指向仓库内的相对路径 `QuadrotorModel/package.mo`。如果脚本不在仓库根目录运行，应先计算自己的仓库根目录，再用 `joinpath(PROJECT_ROOT, "QuadrotorModel", "package.mo")` 拼接路径。
 
 ## 目录说明
 

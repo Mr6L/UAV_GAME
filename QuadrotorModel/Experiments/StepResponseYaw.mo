@@ -17,8 +17,7 @@ extent={{-10,-10},{10,10}})));
     annotation (Placement(transformation(origin = {2, -29.5}, extent = {{-10, -10}, {10, 10}})));
   QuadrotorModel.Sensors.Sensors sensors1_1 
     annotation (Placement(transformation(origin = {2, -64.5}, extent = {{21, -19}, {-21, 19}})));
-  QuadrotorModel.Experiments.YawCommandController controller3_2(
-    PID1(KP = 0.5, KI = 0, KD = 0), PID7(KP = 8, KI = 6, KD = 4), PID3(KP = 1.5), PID4(KP = 1.5)) 
+  QuadrotorModel.Blocks.Controller.ActiveController controller3_2(baselineYawKP = 0.5) 
     annotation (Placement(transformation(origin = {-71, 9}, extent = {{-25, -25}, {25, 25}})));
   Modelica.Mechanics.Rotational.Sensors.SpeedSensor speedSensor[4] 
     annotation (Placement(transformation(origin = {80, 66}, extent = {{-10, -10}, {10, 10}})));
@@ -28,6 +27,9 @@ equation
     annotation (Line(origin={0,0},
 points={{-157,32},{-98.5,32}},
 color={0,0,127}),__MWORKS(BlockSystem(NamedSignal)));
+  controller3_2.position_command[1] = 0;
+  controller3_2.position_command[2] = 0;
+  controller3_2.position_command[3] = if time < 5 then time else 5;
 
   connect(actuator1_1.flange_a, quadChassisTest17_1.flange_a) 
     annotation (Line(points = {{12, 46.5}, {30, 46.5}, {30, 28.5}, {52, 28.5}},
@@ -79,5 +81,5 @@ color={0,0,127}),__MWORKS(BlockSystem(NamedSignal)));
     Diagram(coordinateSystem(extent = {{-200, -100}, {200, 100}}, grid = {2, 2})),
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = false, grid = {2, 2})),
     experiment(Algorithm = Dassl, StartTime = 0, StopTime = 50, Tolerance = 0.0001, Interval = 0.01),
-    Documentation(info = "<html><p>The original controller source is not modified. YawCommandController only exposes yaw reference as an experiment input.</p></html>"));
+    Documentation(info = "<html><p>Yaw step response experiment using ActiveController. Position command holds x/y at 0 and ramps z to 5 m while yaw_command steps at 15 s.</p></html>"));
 end StepResponseYaw;

@@ -28,7 +28,7 @@ within QuadrotorModel.Examples;
           grid = {2.0, 2.0})),
         experiment(Algorithm = Dassl, StartTime = 0, StopTime = 50, Tolerance = 0.0001, Interval = 0.01));
       extends Modelica.Icons.Example;
-      Blocks.Controller.Controller controller3_2 
+      Blocks.Controller.ActiveController controller3_2 
         annotation (Placement(transformation(origin = {-76.00000000000001, 16.0},
           extent = {{-25.000000000000014, -25.0}, {25.0, 25.0}})));
       Sensors.Sensors sensors1_1 
@@ -37,6 +37,7 @@ within QuadrotorModel.Examples;
       Modelica.Mechanics.Rotational.Sensors.SpeedSensor speedSensor[4] annotation (Placement(transformation(origin = {80.0, 66.0},
         extent = {{-10.0, -10.0}, {10.0, 10.0}})));
     equation
+      controller3_2.yaw_command = 0;
       connect(actuator1_1.flange_a, quadChassisTest17_1.flange_a) 
         annotation (Line(origin = {26.0, 37.5},
           points = {{-15.0, 16.0}, {4.0, 16.0}, {4.0, 0.0}, {35.0, 0.0}},

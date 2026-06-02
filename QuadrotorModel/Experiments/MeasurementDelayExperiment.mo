@@ -18,13 +18,13 @@ model MeasurementDelayExperiment "测量信号延迟实验"
     annotation (Placement(transformation(origin = {2, -29.5}, extent = {{-10, -10}, {10, 10}})));
   QuadrotorModel.Sensors.Sensors sensors1_1
     annotation (Placement(transformation(origin = {2, -64.5}, extent = {{21, -19}, {-21, 19}})));
-  QuadrotorModel.Blocks.Controller.Controller controller3_2(
-    PID7(KP = 8, KI = 6, KD = 4), PID3(KP = 1.5), PID4(KP = 1.5))
+  QuadrotorModel.Blocks.Controller.ActiveController controller3_2
     annotation (Placement(transformation(origin = {-71, 9}, extent = {{-25, -25}, {25, 25}})));
   Modelica.Mechanics.Rotational.Sensors.SpeedSensor speedSensor[4]
     annotation (Placement(transformation(origin = {80, 66}, extent = {{-10, -10}, {10, 10}})));
 
 equation
+  controller3_2.yaw_command = 0;
   controller3_2.position_command[1] = 0;
   controller3_2.position_command[2] = 0;
   connect(zCommand.y, controller3_2.position_command[3])

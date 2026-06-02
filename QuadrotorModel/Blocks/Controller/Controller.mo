@@ -179,6 +179,10 @@ within QuadrotorModel.Blocks.Controller;
           extent = {{-20.0, -20.0}, {20.0, 20.0}}),
           iconTransformation(origin = {-110.0, -62.0},
             extent = {{-10.0, -10.0}, {10.0, 10.0}})));
+        Modelica.Blocks.Interfaces.RealInput yaw_command "Yaw angle command" annotation (Placement(transformation(origin = {-286.0, 142.0},
+          extent = {{-20.0, -20.0}, {20.0, 20.0}}),
+          iconTransformation(origin = {-110.0, 92.0},
+            extent = {{-10.0, -10.0}, {10.0, 10.0}})));
         Modelica.Blocks.Interfaces.RealOutput y
           "一号电机转速控制信号" annotation (Placement(transformation(origin = {280.0, 136.0},
             extent = {{-10.0, -10.0}, {10.0, 10.0}}),
@@ -199,9 +203,6 @@ within QuadrotorModel.Blocks.Controller;
             extent = {{-10.0, -10.0}, {10.0, 10.0}}),
             iconTransformation(origin = {110.0, -58.0},
               extent = {{-10.0, -10.0}, {10.0, 10.0}})));
-        Modelica.Blocks.Sources.Constant const(k = 0) 
-          annotation (Placement(transformation(origin = {-68.96308557177342, 136.0},
-            extent = {{-10.0, -10.0}, {10.0, 10.0}})));
       equation
         connect(gain2.y, feedback3.u2) 
           annotation (Line(origin = {53.610508919861104, -149.8919319107595},
@@ -434,9 +435,9 @@ within QuadrotorModel.Blocks.Controller;
           annotation (Line(origin = {35.0, 136.0},
             points = {{-4.0, 0.0}, {3.0, 0.0}},
             color = {0, 0, 127}));
-        connect(feedback.u1, const.y) 
-          annotation (Line(origin = {-53.0, 136.0},
-            points = {{5.0, 0.0}, {-4.963085571773419, 0.0}},
+        connect(feedback.u1, yaw_command) 
+          annotation (Line(origin = {-137.0, 136.0},
+            points = {{89.0, 0.0}, {-23.0, 0.0}, {-23.0, 6.0}, {-149.0, 6.0}},
             color = {0, 0, 127}));
         connect(position_command[1], feedback4.u1) 
           annotation (Line(origin = {-234.0, 75.0},

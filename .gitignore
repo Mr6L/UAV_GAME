@@ -1,0 +1,6 @@
+# Local collaboration notes may contain machine-specific paths.
+LOCAL_NOTES.md
+*.local.md
+*.tmp
+*.log
+results/

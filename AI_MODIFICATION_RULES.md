@@ -9,3 +9,4 @@
 5. 不要删除或改写已有模型中的 `annotation(Placement(...))`、`annotation(Line(...))`、`Diagram(...)`、`Icon(...)`，否则 Sysplorer 图形界面可能损坏。
 6. 保持已有类名和接口名稳定，例如 `QuadrotorModel.Examples.Example1` 不应改名。
 7. 新增或删除模型文件时，同步更新对应目录下的 `package.order`。
+8. 本文档中的路径均相对于仓库根目录 `UAV_GAME/`；不要提交个人机器上的绝对工作目录路径。

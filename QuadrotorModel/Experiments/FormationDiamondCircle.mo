@@ -18,14 +18,14 @@ model FormationDiamondCircle "四机菱形队形跟踪圆形轨迹"
     annotation (Placement(transformation(origin = {-80, 12}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
-    initialPosition = {0, 0, 0},
+    initialPosition = {2, 0, 0},
     showSceneReferences = true)
     annotation (Placement(transformation(origin = {30, 72}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {-2, -2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0, -2, 0})
     annotation (Placement(transformation(origin = {30, 24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {-2, 2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0, 2, 0})
     annotation (Placement(transformation(origin = {30, -24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-4, 0, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0, 0})
     annotation (Placement(transformation(origin = {30, -72}, extent = {{-16, -16}, {16, 16}})));
   Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0)
     annotation (Placement(transformation(origin = {-24, -98}, extent = {{-8, -8}, {8, 8}})));

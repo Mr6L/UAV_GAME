@@ -16,16 +16,16 @@ model FormationVShapeSpiral "五机V字队形螺旋爬升"
     annotation (Placement(transformation(origin = {-80, 14}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
-    initialPosition = {0, 0, 0},
+    initialPosition = {2.4, 0, 0},
     showSceneReferences = true)
     annotation (Placement(transformation(origin = {34, 84}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {-2, -1.5, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0.4, -1.5, 0})
     annotation (Placement(transformation(origin = {34, 42}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {-2, 1.5, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0.4, 1.5, 0})
     annotation (Placement(transformation(origin = {34, 0}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-4, -3, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-1.6, -3, 0})
     annotation (Placement(transformation(origin = {34, -42}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone5(initialPosition = {-4, 3, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone5(initialPosition = {-1.6, 3, 0})
     annotation (Placement(transformation(origin = {34, -84}, extent = {{-14, -14}, {14, 14}})));
   Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0)
     annotation (Placement(transformation(origin = {-24, -104}, extent = {{-8, -8}, {8, 8}})));

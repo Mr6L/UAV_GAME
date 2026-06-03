@@ -22,14 +22,14 @@ model FormationWindDisturbance "外部扰动下的四机编队保持"
     annotation (Placement(transformation(origin = {-150, -48}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
-    initialPosition = {0, 0, 0},
+    initialPosition = {2, 0, 0},
     showSceneReferences = true)
     annotation (Placement(transformation(origin = {34, 72}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {-2, -2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0, -2, 0})
     annotation (Placement(transformation(origin = {34, 24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {-2, 2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0, 2, 0})
     annotation (Placement(transformation(origin = {34, -24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-4, 0, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0, 0})
     annotation (Placement(transformation(origin = {34, -72}, extent = {{-16, -16}, {16, 16}})));
 
 equation

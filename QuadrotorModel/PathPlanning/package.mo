@@ -34,5 +34,5 @@ within QuadrotorModel;
         lineColor = {192, 192, 192},
         fillColor = {192, 192, 192},
         fillPattern = FillPattern.Solid,
-        points = {{0.0, 11.0}, {8.0, -11.0}, {-8.0, -11.0}, {0.0, 11.0}})}));
+        points = {{0.0, 11.0}, {8.0, -11.0}, {-8.0, -11.0}, {0.0, 11.0}})}),__MWORKS(version="26.2.1"));
   end PathPlanning;

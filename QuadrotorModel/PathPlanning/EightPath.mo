@@ -42,7 +42,7 @@ within QuadrotorModel.PathPlanning;
         pattern = LinePattern.Dash,
         arrow = {Arrow.None, Arrow.Filled},
         smooth = Smooth.Bezier)}),Diagram(coordinateSystem(extent={{-100,-100},{100,100}},
-    grid={2,2})));
+    grid={2,2})),__MWORKS(version="26.2.1"));
       equation
       if time<=0 then
       x=0;

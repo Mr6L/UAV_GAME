@@ -10,6 +10,6 @@ within QuadrotorModel;
         points = {{-40.0, 0.0}, {40.0, 0.0}}), Line(origin = {0.0, -40.0},
         points = {{-20.0, 0.0}, {20.0, 0.0}}), Ellipse(origin = {1.0, 21.0},
         fillColor = {255, 255, 255},
-        extent = {{-21.0, 21.0}, {21.0, -21.0}})}));
+        extent = {{-21.0, 21.0}, {21.0, -21.0}})}),__MWORKS(version="26.2.1"));
     extends Modelica.Icons.Package;
   end GroundModel;

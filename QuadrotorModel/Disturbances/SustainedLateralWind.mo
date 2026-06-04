@@ -6,11 +6,11 @@ model SustainedLateralWind "持续横向风扰"
     Placement(transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}),
       iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Sources.RealExpression fx(
-    y = if time < startTime then 0 else lateralForce)
+    y = if time < startTime then 0 else lateralForce) 
     annotation (Placement(transformation(origin = {-34, 40}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant fy(k = 0)
+  Modelica.Blocks.Sources.Constant fy(k = 0) 
     annotation (Placement(transformation(origin = {-34, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant fz(k = 0)
+  Modelica.Blocks.Sources.Constant fz(k = 0) 
     annotation (Placement(transformation(origin = {-34, -40}, extent = {{-10, -10}, {10, 10}})));
 
 equation
@@ -28,5 +28,5 @@ equation
         radius = 25), Line(points = {{-70, 0}, {60, 0}}, color = {0, 0, 200},
         thickness = 1, arrow = {Arrow.None, Arrow.Filled}), Text(extent = {{-54, 46}, {54, 16}},
         textString = "Wind")}),
-    Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, grid = {2, 2})));
+    Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, grid = {2, 2})),__MWORKS(version="26.2.1"));
 end SustainedLateralWind;

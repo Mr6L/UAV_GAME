@@ -37,7 +37,7 @@ within QuadrotorModel.PathPlanning;
           pattern = LinePattern.Dash,
           arrow = {Arrow.None, Arrow.Filled},
           arrowSize = 4.0,
-          __MWorks_Manhattanize = true)}));
+          __MWorks_Manhattanize = true)}),__MWORKS(version="26.2.1"));
       Modelica.Blocks.Sources.Ramp ramp3(startTime = 30, duration = 10,
         height = 10) 
         annotation (Placement(transformation(origin = {6.0, 0.0},

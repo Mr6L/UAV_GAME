@@ -13,37 +13,37 @@ model ActiveController "Current controller selected for all scenarios"
     hoverMass = hoverMass,
     gravity = gravity,
     liftCoefficient = liftCoefficient,
-    hoverFeedforwardScale = hoverFeedforwardScale)
+    hoverFeedforwardScale = hoverFeedforwardScale) 
     annotation (Placement(transformation(origin = {0, 0}, extent = {{-24, -24}, {24, 24}})), __MWORKS(SECInstance = true));
 
 equation
-  connect(position_command[1], core.positionCommandX)
+  connect(position_command[1], core.positionCommandX) 
     annotation (Line(points = {{-120, 60}, {-66, 60}, {-66, 18}, {-26, 18}}, color = {0, 0, 127}));
-  connect(position_command[2], core.positionCommandY)
+  connect(position_command[2], core.positionCommandY) 
     annotation (Line(points = {{-120, 60}, {-70, 60}, {-70, 14}, {-26, 14}}, color = {0, 0, 127}));
-  connect(position_command[3], core.positionCommandZ)
+  connect(position_command[3], core.positionCommandZ) 
     annotation (Line(points = {{-120, 60}, {-74, 60}, {-74, 10}, {-26, 10}}, color = {0, 0, 127}));
-  connect(yaw_command, core.yawCommand)
+  connect(yaw_command, core.yawCommand) 
     annotation (Line(points = {{-120, 28}, {-52, 28}, {-52, 6}, {-26, 6}}, color = {0, 0, 127}));
-  connect(position[1], core.positionX)
+  connect(position[1], core.positionX) 
     annotation (Line(points = {{-120, 0}, {-54, 0}, {-54, 2}, {-26, 2}}, color = {0, 0, 127}));
-  connect(position[2], core.positionY)
+  connect(position[2], core.positionY) 
     annotation (Line(points = {{-120, 0}, {-54, 0}, {-54, -2}, {-26, -2}}, color = {0, 0, 127}));
-  connect(position[3], core.positionZ)
+  connect(position[3], core.positionZ) 
     annotation (Line(points = {{-120, 0}, {-58, 0}, {-58, -6}, {-26, -6}}, color = {0, 0, 127}));
-  connect(angle[1], core.rollAngle)
+  connect(angle[1], core.rollAngle) 
     annotation (Line(points = {{-120, -60}, {-66, -60}, {-66, -10}, {-26, -10}}, color = {0, 0, 127}));
-  connect(angle[2], core.pitchAngle)
+  connect(angle[2], core.pitchAngle) 
     annotation (Line(points = {{-120, -60}, {-70, -60}, {-70, -14}, {-26, -14}}, color = {0, 0, 127}));
-  connect(angle[3], core.yawAngle)
+  connect(angle[3], core.yawAngle) 
     annotation (Line(points = {{-120, -60}, {-74, -60}, {-74, -18}, {-26, -18}}, color = {0, 0, 127}));
-  connect(core.y, y)
+  connect(core.y, y) 
     annotation (Line(points = {{26, 14}, {58, 14}, {58, 60}, {120, 60}}, color = {0, 0, 127}));
-  connect(core.y1, y1)
+  connect(core.y1, y1) 
     annotation (Line(points = {{26, 5}, {120, 5}, {120, 20}}, color = {0, 0, 127}));
-  connect(core.y2, y2)
+  connect(core.y2, y2) 
     annotation (Line(points = {{26, -5}, {120, -5}, {120, -20}}, color = {0, 0, 127}));
-  connect(core.y3, y3)
+  connect(core.y3, y3) 
     annotation (Line(points = {{26, -14}, {58, -14}, {58, -60}, {120, -60}}, color = {0, 0, 127}));
 
   annotation (
@@ -53,5 +53,5 @@ equation
         fillPattern = FillPattern.Solid), Text(extent = {{-88, 24}, {88, -24}},
         textString = "Enhanced PID")}),
     Diagram(coordinateSystem(extent = {{-140, -90}, {140, 90}}, grid = {2, 2})),
-    Documentation(info = "<html><p>ActiveController keeps the legacy array interface and delegates to the Sysblock EnhancedPIDController core through an SECInstance.</p></html>"));
+    Documentation(info = "<html><p>ActiveController keeps the legacy array interface and delegates to the Sysblock EnhancedPIDController core through an SECInstance.</p></html>"),__MWORKS(version="26.2.1"));
 end ActiveController;

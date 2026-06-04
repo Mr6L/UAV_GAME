@@ -42,7 +42,7 @@ within QuadrotorModel.PathPlanning;
         pattern = LinePattern.Dash,
         arrow = {Arrow.None, Arrow.Filled},
         arrowSize = 4.0,
-        __MWorks_Manhattanize = true)}));
+        __MWorks_Manhattanize = true)}),__MWORKS(version="26.2.1"));
     equation
       connect(gain1.y, position_command[1]) 
         annotation (Line(origin = {89.0, 21.0},

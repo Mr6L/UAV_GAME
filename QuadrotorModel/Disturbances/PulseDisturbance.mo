@@ -7,11 +7,11 @@ model PulseDisturbance "瞬时脉冲扰动"
     Placement(transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}),
       iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Sources.RealExpression fx(
-    y = if time >= startTime and time < startTime + pulseDuration then pulseForce else 0)
+    y = if time >= startTime and time < startTime + pulseDuration then pulseForce else 0) 
     annotation (Placement(transformation(origin = {-34, 40}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant fy(k = 0)
+  Modelica.Blocks.Sources.Constant fy(k = 0) 
     annotation (Placement(transformation(origin = {-34, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant fz(k = 0)
+  Modelica.Blocks.Sources.Constant fz(k = 0) 
     annotation (Placement(transformation(origin = {-34, -40}, extent = {{-10, -10}, {10, 10}})));
 
 equation
@@ -28,5 +28,5 @@ equation
         fillPattern = FillPattern.HorizontalCylinder, extent = {{-100, -100}, {100, 100}},
         radius = 25), Line(points = {{-70, -40}, {-20, -40}, {-20, 42}, {20, 42}, {20, -40}, {70, -40}},
         color = {200, 0, 0}, thickness = 1)}),
-    Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, grid = {2, 2})));
+    Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, grid = {2, 2})),__MWORKS(version="26.2.1"));
 end PulseDisturbance;

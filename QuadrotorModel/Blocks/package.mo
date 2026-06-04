@@ -18,7 +18,7 @@ within QuadrotorModel;
       points = {{-21.25, 35.0}, {13.75, 35.0}, {13.75, -35.0}, {-6.25, -35.0}}), Polygon(origin = {40.0, -35.0},
       pattern = LinePattern.None,
       fillPattern = FillPattern.Solid,
-      points = {{-10.0, 0.0}, {5.0, 5.0}, {5.0, -5.0}})}));
+      points = {{-10.0, 0.0}, {5.0, 5.0}, {5.0, -5.0}})}),__MWORKS(version="26.2.1"));
 
 
 

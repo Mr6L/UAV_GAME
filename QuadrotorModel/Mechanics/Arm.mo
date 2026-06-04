@@ -44,6 +44,7 @@ within QuadrotorModel.Mechanics;
       Modelica.Mechanics.MultiBody.Interfaces.Frame_a frame_a3 
         annotation (Placement(transformation(origin = {-100.0, -76.0},
           extent = {{-16.0, -16.0}, {16.0, 16.0}})));
+      annotation(__MWORKS(version="26.2.1"));
     equation
       connect(Dronefixed1.frame_a, frame_b) 
         annotation (Line(origin = {64.0, 77.0},

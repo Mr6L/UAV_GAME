@@ -5,7 +5,7 @@ model QuadrotorAgent "可复用单机闭环无人机代理"
 
   Modelica.Blocks.Interfaces.RealInput position_command[3] "期望位置" 
     annotation (Placement(transformation(origin = {-120, 60}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Interfaces.RealInput yaw_command "期望航向角"
+  Modelica.Blocks.Interfaces.RealInput yaw_command "期望航向角" 
     annotation (Placement(transformation(origin = {-120, 20}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Interfaces.RealInput external_force[3] "外部扰动力" 
     annotation (Placement(transformation(origin = {-120, -60}, extent = {{-10, -10}, {10, 10}})));
@@ -85,5 +85,5 @@ color={95,95,95}),__MWORKS(BlockSystem(NamedSignal)));
         lineColor = {120, 120, 120}, fillColor = {248, 248, 248},
         fillPattern = FillPattern.Solid), Text(extent = {{-78, 24}, {78, -24}},
         textString = "Agent")}),
-    Diagram(coordinateSystem(extent = {{-140, -100}, {140, 100}})));
+    Diagram(coordinateSystem(extent = {{-140, -100}, {140, 100}})),__MWORKS(version="26.2.1"));
 end QuadrotorAgent;

@@ -7,27 +7,27 @@ model FormationDiamondCircle "四机菱形队形跟踪圆形轨迹"
     frequency = 0.02,
     altitude = 5,
     climbDuration = 5,
-    startTime = 10)
+    startTime = 10) 
     annotation (Placement(transformation(origin = {-140, 44}, extent = {{-12, -12}, {12, 12}})));
   QuadrotorModel.Formations.FormationOffsets offsets(
     n = 4,
     formationType = 2,
-    spacing = 2)
+    spacing = 2) 
     annotation (Placement(transformation(origin = {-140, -18}, extent = {{-12, -12}, {12, 12}})));
-  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 4)
+  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 4) 
     annotation (Placement(transformation(origin = {-80, 12}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
     initialPosition = {2, 0, 0},
-    showSceneReferences = true)
+    showSceneReferences = true) 
     annotation (Placement(transformation(origin = {30, 72}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0, -2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0, -2, 0}) 
     annotation (Placement(transformation(origin = {30, 24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0, 2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0, 2, 0}) 
     annotation (Placement(transformation(origin = {30, -24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0, 0}) 
     annotation (Placement(transformation(origin = {30, -72}, extent = {{-16, -16}, {16, 16}})));
-  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0)
+  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0) 
     annotation (Placement(transformation(origin = {-24, -98}, extent = {{-8, -8}, {8, 8}})));
 
 equation
@@ -48,5 +48,5 @@ equation
 
   annotation (
     Diagram(coordinateSystem(extent = {{-180, -110}, {120, 100}}, grid = {2, 2})),
-    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 100, Tolerance = 0.0001, Interval = 0.02));
+    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 100, Tolerance = 0.0001, Interval = 0.02),__MWORKS(version="26.2.1"));
 end FormationDiamondCircle;

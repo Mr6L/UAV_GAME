@@ -34,7 +34,7 @@ within QuadrotorModel.Blocks.ControlMethod;
           textString = "PID",
           fontName = "Times New Roman",
           textStyle = {TextStyle.None},
-          textColor = {120, 120, 120})}));
+          textColor = {120, 120, 120})}),__MWORKS(version="26.2.1"));
         extends Modelica.Blocks.Interfaces.SISO;
         Modelica.Blocks.Math.Gain gain3 
           annotation (Placement(transformation(origin = {73.99999999999999, 0.0},

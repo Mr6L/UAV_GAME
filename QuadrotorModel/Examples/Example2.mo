@@ -26,7 +26,7 @@ within QuadrotorModel.Examples;
         Icon(coordinateSystem(extent = {{-100.0, -100.0}, {100.0, 100.0}},
           preserveAspectRatio = false,
           grid = {2.0, 2.0})),
-        experiment(Algorithm = Dassl, StartTime = 0, StopTime = 50, Tolerance = 0.0001, Interval = 0.01));
+        experiment(Algorithm = Dassl, StartTime = 0, StopTime = 50, Tolerance = 0.0001, Interval = 0.01),__MWORKS(version="26.2.1"));
       extends Modelica.Icons.Example;
       Blocks.Controller.ActiveController controller3_2 
         annotation (Placement(transformation(origin = {-76.00000000000001, 16.0},

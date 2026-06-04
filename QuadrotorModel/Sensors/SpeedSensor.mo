@@ -19,5 +19,5 @@ way and provides the result as output signal <strong>w</strong>
           preserveAspectRatio = true,
           extent = {{-100, -100}, {100, 100}}), graphics = {Text(
           extent = {{70, -30}, {120, -70}},
-          textString = "w")}));
+          textString = "w")}),__MWORKS(version="26.2.1"));
     end SpeedSensor;

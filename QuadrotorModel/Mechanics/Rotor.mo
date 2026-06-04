@@ -37,6 +37,7 @@ within QuadrotorModel.Mechanics;
       Modelica.Mechanics.MultiBody.Interfaces.Frame_b frame_b 
         annotation (Placement(transformation(origin = {101.0, 0.0},
           extent = {{-16.0, -16.0}, {16.0, 16.0}})));
+      annotation(__MWORKS(version="26.2.1"));
     equation
       connect(propellers1.frame_a, revolute1.frame_b) 
         annotation (Line(origin = {-4.0, -0.5},

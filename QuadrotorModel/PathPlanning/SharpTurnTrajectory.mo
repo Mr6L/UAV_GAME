@@ -26,5 +26,5 @@ equation
       graphics = {Rectangle(lineColor = {200, 200, 200}, fillColor = {248, 248, 248},
         fillPattern = FillPattern.HorizontalCylinder, extent = {{-100, -100}, {100, 100}},
         radius = 25), Line(points = {{-65, -45}, {20, -45}, {20, 55}}, color = {120, 120, 120},
-        thickness = 0.5, arrow = {Arrow.None, Arrow.Filled})}));
+        thickness = 0.5, arrow = {Arrow.None, Arrow.Filled})}),__MWORKS(version="26.2.1"));
 end SharpTurnTrajectory;

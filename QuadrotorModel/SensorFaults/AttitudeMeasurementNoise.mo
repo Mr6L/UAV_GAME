@@ -2,10 +2,10 @@ within QuadrotorModel.SensorFaults;
 model AttitudeMeasurementNoise "姿态测量噪声"
   parameter Real amplitude = 0.01 "姿态角噪声幅值";
   parameter Modelica.Units.SI.Time startTime = 5 "噪声开始时间";
-  Modelica.Blocks.Interfaces.RealInput cleanAngle[3] "无噪声姿态测量"
+  Modelica.Blocks.Interfaces.RealInput cleanAngle[3] "无噪声姿态测量" 
     annotation (Placement(transformation(origin = {-110, 0}, extent = {{-10, -10}, {10, 10}}),
       iconTransformation(origin = {-110, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Interfaces.RealOutput noisyAngle[3] "带噪声姿态测量"
+  Modelica.Blocks.Interfaces.RealOutput noisyAngle[3] "带噪声姿态测量" 
     annotation (Placement(transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}),
       iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
 
@@ -18,5 +18,5 @@ equation
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, grid = {2, 2}),
       graphics = {Rectangle(lineColor = {200, 200, 200}, fillColor = {248, 248, 248},
         fillPattern = FillPattern.HorizontalCylinder, extent = {{-100, -100}, {100, 100}},
-        radius = 25), Text(extent = {{-74, 58}, {74, 8}}, textString = "Att Noise")}));
+        radius = 25), Text(extent = {{-74, 58}, {74, 8}}, textString = "Att Noise")}),__MWORKS(version="26.2.1"));
 end AttitudeMeasurementNoise;

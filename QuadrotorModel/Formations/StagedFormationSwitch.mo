@@ -9,7 +9,7 @@ block StagedFormationSwitch "Three-stage smooth formation switch"
   parameter Modelica.Units.SI.Time secondStartTime = 50 "Second switch start time";
   parameter Modelica.Units.SI.Time secondDuration = 10 "Second switch duration";
 
-  Modelica.Blocks.Interfaces.RealOutput offsets[n, 3] "Smoothed formation offsets"
+  Modelica.Blocks.Interfaces.RealOutput offsets[n, 3] "Smoothed formation offsets" 
     annotation (Placement(transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
 
 protected
@@ -28,7 +28,7 @@ equation
   for i in 1:n loop
     for j in 1:3 loop
       middleState[i, j] = (1 - blend1) * fromOffsets[i, j] + blend1 * middleOffsets[i, j];
-      offsets[i, j] = if time < secondStartTime then middleState[i, j] else
+      offsets[i, j] = if time < secondStartTime then middleState[i, j] else 
         (1 - blend2) * middleOffsets[i, j] + blend2 * toOffsets[i, j];
     end for;
   end for;
@@ -38,5 +38,5 @@ equation
       graphics = {Rectangle(extent = {{-100, 100}, {100, -100}}, radius = 20,
         lineColor = {120, 120, 120}, fillColor = {248, 248, 248},
         fillPattern = FillPattern.Solid), Text(extent = {{-86, 24}, {86, -24}},
-        textString = "3-Stage")}));
+        textString = "3-Stage")}),__MWORKS(version="26.2.1"));
 end StagedFormationSwitch;

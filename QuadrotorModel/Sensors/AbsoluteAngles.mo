@@ -70,5 +70,5 @@ and sequence[2] &ne; sequence[3]. Often used values are:
            = <strong>{3,1,3}</strong>  // Euler angle sequence
            = <strong>{3,2,1}</strong>
 </pre>
-</html>"));
+</html>"),__MWORKS(version="26.2.1"));
     end AbsoluteAngles;

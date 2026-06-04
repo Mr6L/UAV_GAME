@@ -5,29 +5,29 @@ model FormationVShapeSpiral "五机V字队形螺旋爬升"
   QuadrotorModel.PathPlanning.CirclePath leaderPath(
     ramp(duration = 80, height = 8),
     sine(f = 0.025, amplitude = 3, startTime = 10),
-    cosine(f = 0.025, amplitude = 3, startTime = 10))
+    cosine(f = 0.025, amplitude = 3, startTime = 10)) 
     annotation (Placement(transformation(origin = {-140, 46}, extent = {{-12, -12}, {12, 12}})));
   QuadrotorModel.Formations.FormationOffsets offsets(
     n = 5,
     formationType = 3,
-    spacing = 2)
+    spacing = 2) 
     annotation (Placement(transformation(origin = {-140, -18}, extent = {{-12, -12}, {12, 12}})));
-  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 5)
+  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 5) 
     annotation (Placement(transformation(origin = {-80, 14}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
     initialPosition = {2.4, 0, 0},
-    showSceneReferences = true)
+    showSceneReferences = true) 
     annotation (Placement(transformation(origin = {34, 84}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0.4, -1.5, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0.4, -1.5, 0}) 
     annotation (Placement(transformation(origin = {34, 42}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0.4, 1.5, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0.4, 1.5, 0}) 
     annotation (Placement(transformation(origin = {34, 0}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-1.6, -3, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-1.6, -3, 0}) 
     annotation (Placement(transformation(origin = {34, -42}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone5(initialPosition = {-1.6, 3, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone5(initialPosition = {-1.6, 3, 0}) 
     annotation (Placement(transformation(origin = {34, -84}, extent = {{-14, -14}, {14, 14}})));
-  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0)
+  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0) 
     annotation (Placement(transformation(origin = {-24, -104}, extent = {{-8, -8}, {8, 8}})));
 
 equation
@@ -51,5 +51,5 @@ equation
 
   annotation (
     Diagram(coordinateSystem(extent = {{-180, -120}, {120, 110}}, grid = {2, 2})),
-    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 100, Tolerance = 0.0001, Interval = 0.02));
+    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 100, Tolerance = 0.0001, Interval = 0.02),__MWORKS(version="26.2.1"));
 end FormationVShapeSpiral;

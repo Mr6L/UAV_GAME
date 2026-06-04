@@ -1,6 +1,6 @@
 package QuadrotorModel "四旋翼无人机模型"
   extends Modelica.Icons.Package;
-  annotation(uses(Modelica(version = "4.0.0.TY.1")));
+  annotation(uses(Modelica(version = "4.0.0.TY.1")),__MWORKS(version="26.2.1"));
 
   annotation (Icon(coordinateSystem(extent = {{-100.0, -100.0}, {100.0, 100.0}},
     preserveAspectRatio = false,

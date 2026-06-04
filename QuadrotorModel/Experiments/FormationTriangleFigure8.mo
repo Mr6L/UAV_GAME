@@ -6,25 +6,25 @@ model FormationTriangleFigure8 "三机三角队形跟踪8字轨迹"
     XAMP = 4,
     YAMP = 4,
     XOmega = 0.025,
-    YOmega = 0.05)
+    YOmega = 0.05) 
     annotation (Placement(transformation(origin = {-140, 40}, extent = {{-12, -12}, {12, 12}})));
   QuadrotorModel.Formations.FormationOffsets offsets(
     n = 3,
     formationType = 1,
-    spacing = 2)
+    spacing = 2) 
     annotation (Placement(transformation(origin = {-140, -20}, extent = {{-12, -12}, {12, 12}})));
-  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 3)
+  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 3) 
     annotation (Placement(transformation(origin = {-80, 10}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
     initialPosition = {1.3333333333333333, 0, 0},
-    showSceneReferences = true)
+    showSceneReferences = true) 
     annotation (Placement(transformation(origin = {30, 58}, extent = {{-18, -18}, {18, 18}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {-0.6666666666666667, -2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {-0.6666666666666667, -2, 0}) 
     annotation (Placement(transformation(origin = {30, 0}, extent = {{-18, -18}, {18, 18}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {-0.6666666666666667, 2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {-0.6666666666666667, 2, 0}) 
     annotation (Placement(transformation(origin = {30, -58}, extent = {{-18, -18}, {18, 18}})));
-  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0)
+  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0) 
     annotation (Placement(transformation(origin = {-24, -92}, extent = {{-8, -8}, {8, 8}})));
 
 equation
@@ -42,5 +42,5 @@ equation
 
   annotation (
     Diagram(coordinateSystem(extent = {{-180, -110}, {120, 100}}, grid = {2, 2})),
-    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 120, Tolerance = 0.0001, Interval = 0.02));
+    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 120, Tolerance = 0.0001, Interval = 0.02),__MWORKS(version="26.2.1"));
 end FormationTriangleFigure8;

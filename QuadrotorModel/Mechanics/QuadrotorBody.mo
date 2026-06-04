@@ -30,6 +30,7 @@ within QuadrotorModel.Mechanics;
         specularCoefficient = 1,
         r_0(fixed = false),
         enforceStates = true) annotation (Placement(transformation(extent = {{10.0, -10.0}, {-10.0, 10.0}})));
+      annotation(__MWORKS(version="26.2.1"));
     equation
       connect(frame_a, body.frame_b) 
         annotation (Line(origin = {-55.0, 0.0},

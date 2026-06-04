@@ -81,5 +81,5 @@ color={0,0,127}),__MWORKS(BlockSystem(NamedSignal)));
     Diagram(coordinateSystem(extent = {{-200, -100}, {200, 100}}, grid = {2, 2})),
     Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = false, grid = {2, 2})),
     experiment(Algorithm = Dassl, StartTime = 0, StopTime = 50, Tolerance = 0.0001, Interval = 0.01),
-    Documentation(info = "<html><p>Yaw step response experiment using ActiveController. Position command holds x/y at 0 and ramps z to 5 m while yaw_command steps at 15 s.</p></html>"));
+    Documentation(info = "<html><p>Yaw step response experiment using ActiveController. Position command holds x/y at 0 and ramps z to 5 m while yaw_command steps at 15 s.</p></html>"),__MWORKS(version="26.2.1"));
 end StepResponseYaw;

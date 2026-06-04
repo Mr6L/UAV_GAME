@@ -6,12 +6,12 @@ model RandomDisturbance "随机扰动"
     Placement(transformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}}),
       iconTransformation(origin = {110, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Sources.RealExpression fx(
-    y = if time < startTime then 0 else amplitude * (0.55 * sin(7.1 * time) + 0.30 * sin(13.7 * time + 0.6) + 0.15 * sin(29.3 * time + 1.2)))
+    y = if time < startTime then 0 else amplitude * (0.55 * sin(7.1 * time) + 0.30 * sin(13.7 * time + 0.6) + 0.15 * sin(29.3 * time + 1.2))) 
     annotation (Placement(transformation(origin = {-34, 40}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Blocks.Sources.RealExpression fy(
-    y = if time < startTime then 0 else amplitude * (0.50 * sin(5.3 * time + 1.4) + 0.35 * sin(17.9 * time) + 0.15 * sin(31.1 * time + 0.3)))
+    y = if time < startTime then 0 else amplitude * (0.50 * sin(5.3 * time + 1.4) + 0.35 * sin(17.9 * time) + 0.15 * sin(31.1 * time + 0.3))) 
     annotation (Placement(transformation(origin = {-34, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant fz(k = 0)
+  Modelica.Blocks.Sources.Constant fz(k = 0) 
     annotation (Placement(transformation(origin = {-34, -40}, extent = {{-10, -10}, {10, 10}})));
 
 equation
@@ -28,5 +28,5 @@ equation
         fillPattern = FillPattern.HorizontalCylinder, extent = {{-100, -100}, {100, 100}},
         radius = 25), Line(points = {{-70, 0}, {-46, 26}, {-22, -18}, {0, 18}, {24, -26}, {48, 24}, {70, 0}},
         color = {80, 80, 180}, thickness = 1, smooth = Smooth.Bezier)}),
-    Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, grid = {2, 2})));
+    Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, grid = {2, 2})),__MWORKS(version="26.2.1"));
 end RandomDisturbance;

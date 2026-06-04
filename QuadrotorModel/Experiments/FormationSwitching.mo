@@ -14,7 +14,7 @@ model FormationSwitching "横队、菱形和V字队形平滑切换"
     frequency = 0.02,
     altitude = 5,
     climbDuration = 5,
-    startTime = 10)
+    startTime = 10) 
     annotation (Placement(transformation(origin = {-150, 52}, extent = {{-12, -12}, {12, 12}})));
   QuadrotorModel.Formations.StagedFormationSwitch stagedSwitch(
     n = n,
@@ -24,24 +24,24 @@ model FormationSwitching "横队、菱形和V字队形平滑切换"
     firstStartTime = 20,
     firstDuration = 10,
     secondStartTime = secondSwitchTime,
-    secondDuration = 10)
+    secondDuration = 10) 
     annotation (Placement(transformation(origin = {-150, -18}, extent = {{-12, -12}, {12, 12}})));
-  QuadrotorModel.Formations.LeaderFollowerCommand command(n = n)
+  QuadrotorModel.Formations.LeaderFollowerCommand command(n = n) 
     annotation (Placement(transformation(origin = {-82, 8}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
     initialPosition = {0, 0, 0},
-    showSceneReferences = true)
+    showSceneReferences = true) 
     annotation (Placement(transformation(origin = {34, 84}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {-2, -2.2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {-2, -2.2, 0}) 
     annotation (Placement(transformation(origin = {34, 42}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {-2, -0.8, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {-2, -0.8, 0}) 
     annotation (Placement(transformation(origin = {34, 0}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0.8, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0.8, 0}) 
     annotation (Placement(transformation(origin = {34, -42}, extent = {{-14, -14}, {14, 14}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone5(initialPosition = {-2, 2.2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone5(initialPosition = {-2, 2.2, 0}) 
     annotation (Placement(transformation(origin = {34, -84}, extent = {{-14, -14}, {14, 14}})));
-  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0)
+  Modelica.Blocks.Sources.Constant zeroForce[3](each k = 0) 
     annotation (Placement(transformation(origin = {-24, -104}, extent = {{-8, -8}, {8, 8}})));
 
 equation
@@ -65,5 +65,5 @@ equation
 
   annotation (
     Diagram(coordinateSystem(extent = {{-190, -120}, {120, 110}}, grid = {2, 2})),
-    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 90, Tolerance = 0.0001, Interval = 0.02));
+    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 90, Tolerance = 0.0001, Interval = 0.02),__MWORKS(version="26.2.1"));
 end FormationSwitching;

@@ -7,29 +7,29 @@ model FormationWindDisturbance "外部扰动下的四机编队保持"
     frequency = 0.02,
     altitude = 5,
     climbDuration = 5,
-    startTime = 10)
+    startTime = 10) 
     annotation (Placement(transformation(origin = {-150, 52}, extent = {{-12, -12}, {12, 12}})));
   QuadrotorModel.Formations.FormationOffsets offsets(
     n = 4,
     formationType = 2,
-    spacing = 2)
+    spacing = 2) 
     annotation (Placement(transformation(origin = {-150, 8}, extent = {{-12, -12}, {12, 12}})));
-  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 4)
+  QuadrotorModel.Formations.LeaderFollowerCommand command(n = 4) 
     annotation (Placement(transformation(origin = {-88, 28}, extent = {{-12, -12}, {12, 12}})));
   QuadrotorModel.Disturbances.SustainedLateralWind wind(
     lateralForce = 0.02,
-    startTime = 35)
+    startTime = 35) 
     annotation (Placement(transformation(origin = {-150, -48}, extent = {{-12, -12}, {12, 12}})));
 
   QuadrotorModel.Formations.QuadrotorAgent drone1(
     initialPosition = {2, 0, 0},
-    showSceneReferences = true)
+    showSceneReferences = true) 
     annotation (Placement(transformation(origin = {34, 72}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0, -2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone2(initialPosition = {0, -2, 0}) 
     annotation (Placement(transformation(origin = {34, 24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0, 2, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone3(initialPosition = {0, 2, 0}) 
     annotation (Placement(transformation(origin = {34, -24}, extent = {{-16, -16}, {16, 16}})));
-  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0, 0})
+  QuadrotorModel.Formations.QuadrotorAgent drone4(initialPosition = {-2, 0, 0}) 
     annotation (Placement(transformation(origin = {34, -72}, extent = {{-16, -16}, {16, 16}})));
 
 equation
@@ -50,5 +50,5 @@ equation
 
   annotation (
     Diagram(coordinateSystem(extent = {{-190, -110}, {120, 100}}, grid = {2, 2})),
-    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 90, Tolerance = 0.0001, Interval = 0.02));
+    experiment(Algorithm = Dassl, StartTime = 0, StopTime = 90, Tolerance = 0.0001, Interval = 0.02),__MWORKS(version="26.2.1"));
 end FormationWindDisturbance;

@@ -30,7 +30,7 @@ within QuadrotorModel.Sensors;
         extent = {{-68.0, 60.0}, {68.0, -60.0}},
         textString = "Sensors",
         textStyle = {TextStyle.None},
-        textColor = {136, 136, 136})}));
+        textColor = {136, 136, 136})}),__MWORKS(version="26.2.1"));
       AbsolutePosition absolutePosition1(
         resolveInFrame = Modelica.Mechanics.MultiBody.Types.ResolveInFrameA.world) annotation (Placement(transformation(origin = {0.0, -23.974440894568694},
           extent = {{10.0, 10.0}, {-10.0, -10.0}},

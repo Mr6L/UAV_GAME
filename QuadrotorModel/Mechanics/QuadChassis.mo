@@ -88,7 +88,7 @@ within QuadrotorModel.Mechanics;
         textColor = {136, 136, 136})}),
         Diagram(coordinateSystem(extent = {{-200.0, -200.0}, {200.0, 200.0}},
           grid = {2.0, 2.0})),
-        experiment(Algorithm = Dassl, Interval = 0.001, StartTime = 0, StopTime = 30, Tolerance = 1e-10));
+        experiment(Algorithm = Dassl, Interval = 0.001, StartTime = 0, StopTime = 30, Tolerance = 1e-10),__MWORKS(version="26.2.1"));
       inner Modelica.Mechanics.MultiBody.World world(
         animateWorld = false,
         animateGravity = false,

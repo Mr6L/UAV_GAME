@@ -94,5 +94,5 @@ equation
       preserveAspectRatio = false,
       grid = {2, 2})),
     experiment(Algorithm = Dassl, StartTime = 0, StopTime = 80,
-      Tolerance = 0.0001, Interval = 0.01));
+      Tolerance = 0.0001, Interval = 0.01),__MWORKS(version="26.2.1"));
 end SharpTurnTracking;

@@ -101,5 +101,5 @@ computed as:
 <blockquote><pre>
 r = MultiBody.Frames.resolve2(frame_a.R, frame_b.r_0);
 </pre></blockquote>
-</html>"));
+</html>"),__MWORKS(version="26.2.1"));
     end AbsolutePosition;

@@ -134,7 +134,7 @@ within QuadrotorModel.Experiments;
             textString = "PIDController",
             fontName = "Times New Roman",
             textStyle = {TextStyle.None},
-            textColor = {136, 136, 136})}));
+            textColor = {136, 136, 136})}),__MWORKS(version="26.2.1"));
         Modelica.Blocks.Math.Gain gain7(k = 1) 
           annotation (Placement(transformation(origin = {-212.36366062876286, 22.765560154234876},
             extent = {{10.0, -10.0}, {-10.0, 10.0}},

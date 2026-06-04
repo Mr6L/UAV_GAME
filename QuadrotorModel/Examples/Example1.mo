@@ -8,7 +8,7 @@ within QuadrotorModel.Examples;
         grid = {2.0, 2.0})),
         Icon(coordinateSystem(extent = {{-100.0, -100.0}, {100.0, 100.0}},
           preserveAspectRatio = false,
-          grid = {2.0, 2.0})),experiment(StopTime=50,Interval=0.01)
+          grid = {2.0, 2.0})),experiment(StopTime=50,Interval=0.01),__MWORKS(version="26.2.1")
         );
       Mechanics.QuadChassis quadChassisTest17_1 annotation (Placement(transformation(origin = {86.00000000000001, 8.499999999999986},
         extent = {{-34.0, -33.99999999999999}, {34.0, 34.00000000000001}})));

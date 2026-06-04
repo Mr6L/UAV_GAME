@@ -22,5 +22,5 @@ within QuadrotorModel;
       thickness = 0.5), Ellipse(origin = {9.0, 46.0},
       fillPattern = FillPattern.Solid,
       extent = {{4.0, -60.0}, {14.0, -50.0}}), Line(origin = {9.0, 46.0},
-      points = {{-10.0, -26.0}, {72.0, -26.0}, {72.0, -86.0}, {-10.0, -86.0}})}));
+      points = {{-10.0, -26.0}, {72.0, -26.0}, {72.0, -86.0}, {-10.0, -86.0}})}),__MWORKS(version="26.2.1"));
   end Mechanics;

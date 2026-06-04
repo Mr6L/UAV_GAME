@@ -122,6 +122,9 @@ k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
   SysplorerEmbeddedCoder.Sources.Constant heightKawSignal(k = heightKaw) 
     annotation(Placement(transformation(origin = {-420, -230}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
 k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
+  SysplorerEmbeddedCoder.Sources.Constant hoverThrustSignal(k = hoverThrust) 
+    annotation(Placement(transformation(origin = {-420, -260}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
+k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
   SysplorerEmbeddedCoder.Sources.Constant attitudeKpSignal(k = attitudeKP) 
     annotation(Placement(transformation(origin = {-120, -260}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
 k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
@@ -191,6 +194,10 @@ y(Type(ref="double"),Dimension=1)),Type(overflowKind=SysplorerEmbeddedCoder.Type
     annotation(Placement(transformation(origin = {630, -150}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(u(u1(Type(ref="double"),Dimension=1),
 u2(Type(ref="double"),Dimension=1)),
 y(Type(ref="double"),Dimension=1)),Type(overflowKind=SysplorerEmbeddedCoder.Types.OverflowKind.wrap),SampleTime(group="D0")=0)));
+  SysplorerEmbeddedCoder.MathOperation.Sum heightCollectiveCommand(inputs = "++", isSaturate = false) 
+    annotation(Placement(transformation(origin = {300, -80}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(u(u1(Type(ref="double"),Dimension=1),
+u2(Type(ref="double"),Dimension=1)),
+y(Type(ref="double"),Dimension=1)),Type(overflowKind=SysplorerEmbeddedCoder.Types.OverflowKind.wrap),SampleTime(group="D0")=0)));
   SysplorerEmbeddedCoder.MathOperation.Gain motor1Sign(k = 1) 
     annotation(Placement(transformation(origin = {790, 210}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(u(Type(ref="double"),Dimension=1),
 y(Type(ref="double"),Dimension=1),
@@ -244,9 +251,14 @@ k(Type(ref="double"),Dimension=1)),SampleTime(group="D0")=0)));
     parameter RealAuto heightKP = 8 "Height loop proportional gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightKI = 6 "Height loop integral gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightKD = 4 "Height loop derivative gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
-    parameter RealAuto heightOutputMax = 30 "Height thrust-correction upper limit. Tune from motor model, hover throttle, and max thrust; do not leave effectively unlimited." annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
-    parameter RealAuto heightOutputMin = -30 "Height thrust-correction lower limit. Tune together with heightOutputMax and actuator range." annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
-    parameter RealAuto heightIntegralEnableError = 2.0 "Height integral separation threshold. During debugging, set larger to confirm integral removes steady error, then tighten gradually." annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto hoverMass = 0.159504 + 4 * 0.000913171 "Effective vehicle mass used by hover feedforward; include body mass plus propeller masses in the current plant model" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto gravity = 9.81 "Gravity used by the hover feedforward calculation" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto liftCoefficient = 0.002 "Rotor lift coefficient used by the plant force model: thrust = liftCoefficient * speed^2" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto hoverFeedforwardScale = 1 "Multiplier for hover feedforward; keep 1 for parameter-based simulation compensation" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto hoverThrust = hoverFeedforwardScale * sqrt(hoverMass * gravity / (4 * liftCoefficient)) "Per-motor hover speed/command bias computed from mass, gravity, and rotor lift coefficient" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightOutputMax = 25 "Height PID correction upper limit, not total thrust; total command is hoverThrust + heightPID.u" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightOutputMin = -0.9 * hoverThrust "Height PID correction lower limit; keeps hoverThrust + heightPID.u positive so rotor directions are not reversed" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightIntegralEnableError = 10.0 "Height integral separation threshold. Keep large during debugging so integral can remove steady error, then tighten gradually." annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightKaw = 1 "Height anti-windup back-calculation gain; heightKI is nonzero" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightLeakRate = 0 "Height integral leak; 0 disables leak" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightDerivativeFilterN = 50 "Height derivative filter coefficient N" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
@@ -300,6 +312,8 @@ equation
   connect(heightOutputMinSignal.y, heightPID.uMin) annotation(Line(points = {{-420, -200}, {-280, -80}}, color = {0, 0, 0}));
   connect(heightKawSignal.y, heightPID.kaw) annotation(Line(points = {{-420, -230}, {-280, -80}}, color = {0, 0, 0}));
   connect(falseResetSignal.y, heightPID.reset) annotation(Line(points = {{-560, 330}, {-280, -80}}, color = {0, 0, 0}));
+  connect(heightPID.u, heightCollectiveCommand.u1) annotation(Line(points = {{-280, -80}, {300, -80}}, color = {0, 0, 0}));
+  connect(hoverThrustSignal.y, heightCollectiveCommand.u2) annotation(Line(points = {{-420, -260}, {300, -80}}, color = {0, 0, 0}));
   connect(xPositionPID.u, pitchPID.ref) annotation(Line(points = {{-280, 220}, {80, -210}}, color = {0, 0, 0}));
   connect(pitchAngle, pitchPID.meas) annotation(Line(points = {{-720, -210}, {80, -210}}, color = {0, 0, 0}));
   connect(yPositionPID.u, rollPID.ref) annotation(Line(points = {{-280, 70}, {80, -330}}, color = {0, 0, 0}));
@@ -344,10 +358,10 @@ equation
   connect(motor2Attitude.y, motor2Command.u1) annotation(Line(points = {{460, 90}, {630, 90}}, color = {0, 0, 0}));
   connect(motor3Attitude.y, motor3Command.u1) annotation(Line(points = {{460, -30}, {630, -30}}, color = {0, 0, 0}));
   connect(motor4Attitude.y, motor4Command.u1) annotation(Line(points = {{460, -150}, {630, -150}}, color = {0, 0, 0}));
-  connect(heightPID.u, motor1Command.u2) annotation(Line(points = {{-280, -80}, {630, 210}}, color = {0, 0, 0}));
-  connect(heightPID.u, motor2Command.u2) annotation(Line(points = {{-280, -80}, {630, 90}}, color = {0, 0, 0}));
-  connect(heightPID.u, motor3Command.u2) annotation(Line(points = {{-280, -80}, {630, -30}}, color = {0, 0, 0}));
-  connect(heightPID.u, motor4Command.u2) annotation(Line(points = {{-280, -80}, {630, -150}}, color = {0, 0, 0}));
+  connect(heightCollectiveCommand.y, motor1Command.u2) annotation(Line(points = {{300, -80}, {630, 210}}, color = {0, 0, 0}));
+  connect(heightCollectiveCommand.y, motor2Command.u2) annotation(Line(points = {{300, -80}, {630, 90}}, color = {0, 0, 0}));
+  connect(heightCollectiveCommand.y, motor3Command.u2) annotation(Line(points = {{300, -80}, {630, -30}}, color = {0, 0, 0}));
+  connect(heightCollectiveCommand.y, motor4Command.u2) annotation(Line(points = {{300, -80}, {630, -150}}, color = {0, 0, 0}));
   connect(motor1Command.y, motor1Sign.u) annotation(Line(points = {{630, 210}, {790, 210}}, color = {0, 0, 0}));
   connect(motor2Command.y, motor2Sign.u) annotation(Line(points = {{630, 90}, {790, 90}}, color = {0, 0, 0}));
   connect(motor3Command.y, motor3Sign.u) annotation(Line(points = {{630, -30}, {790, -30}}, color = {0, 0, 0}));

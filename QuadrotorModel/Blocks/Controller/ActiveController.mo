@@ -3,8 +3,17 @@ model ActiveController "Current controller selected for all scenarios"
   extends QuadrotorModel.Blocks.Controller.Interfaces.PartialController;
 
   parameter Real baselineYawKP = 5 "Legacy scenario yaw gain mapped to the enhanced yaw loop";
+  parameter Real hoverMass = 0.159504 + 4 * 0.000913171 "Effective vehicle mass used by the enhanced controller hover feedforward";
+  parameter Real gravity = 9.81 "Gravity used by the enhanced controller hover feedforward";
+  parameter Real liftCoefficient = 0.002 "Rotor lift coefficient used by the enhanced controller hover feedforward";
+  parameter Real hoverFeedforwardScale = 1 "Scale factor for parameter-based hover feedforward";
 
-  QuadrotorModel.Blocks.Controller.EnhancedPIDController core(yawKP = baselineYawKP)
+  QuadrotorModel.Blocks.Controller.EnhancedPIDController core(
+    yawKP = baselineYawKP,
+    hoverMass = hoverMass,
+    gravity = gravity,
+    liftCoefficient = liftCoefficient,
+    hoverFeedforwardScale = hoverFeedforwardScale)
     annotation (Placement(transformation(origin = {0, 0}, extent = {{-24, -24}, {24, 24}})), __MWORKS(SECInstance = true));
 
 equation

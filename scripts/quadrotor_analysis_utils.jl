@@ -382,17 +382,38 @@ function connect_and_open_model()
     end
 end
 
+function try_simulate_model(model::String, sim_kwargs)
+    attempts = [
+        ("keyword modelName with parsed experiment settings",
+         () -> SysplorerAPI.SimulateModel(; modelName=model, sim_kwargs...)),
+        ("positional model with parsed experiment settings",
+         () -> SysplorerAPI.SimulateModel(model; sim_kwargs...)),
+        ("keyword modelName using model-saved experiment settings",
+         () -> SysplorerAPI.SimulateModel(; modelName=model)),
+        ("positional model using model-saved experiment settings",
+         () -> SysplorerAPI.SimulateModel(model)),
+    ]
+
+    for (label, call) in attempts
+        try
+            println("Trying SimulateModel: ", label)
+            ok = call()
+            ok == true && return true
+            println("SimulateModel returned false: ", label)
+        catch err
+            println("SimulateModel attempt failed: ", label)
+            println("  ", err)
+        end
+    end
+
+    return false
+end
+
 function run_model_with_saved_settings(model::String)
     settings = read_experiment_settings(model)
     print_experiment_settings(model, settings)
-    ok = false
     sim_kwargs = (; simulation_keyword_pairs(settings)...)
-    try
-        ok = SysplorerAPI.SimulateModel(; modelName=model, sim_kwargs...)
-    catch err
-        println("Keyword SimulateModel call failed; trying positional model argument with project experiment settings.")
-        ok = SysplorerAPI.SimulateModel(model; sim_kwargs...)
-    end
+    ok = try_simulate_model(model, sim_kwargs)
     assert_ok(ok, "SimulateModel failed. Check Sysplorer messages for compile/simulation errors.")
 end
 

@@ -99,15 +99,19 @@ within QuadrotorModel.Mechanics;
         annotation (Placement(transformation(origin = {124.60787940430421, 90.30849111731482},
           extent = {{-10.0, -10.0}, {10.0, 10.0}})));
       parameter Real lift_cofficient = 0.002 "旋翼的升力系数，这里简化处理";
+      parameter Real bodyMass = 0.159504 "Body mass used by perturbation experiments";
+      parameter Real bodyI11 = 0.00010556 "Body inertia I_11 used by perturbation experiments";
+      parameter Real bodyI22 = 0.00010556 "Body inertia I_22 used by perturbation experiments";
+      parameter Real bodyI33 = 0.00010556 "Body inertia I_33 used by perturbation experiments";
       Modelica.Mechanics.MultiBody.Parts.BodyShape body(
         animation = true,
         animateSphere = false,
         r = {0, 0, 0},
         r_CM = {0, 0, 0.0230935},
-        m = 0.159504,
-        I_11 = 0.00010556,
-        I_22 = 0.00010556,
-        I_33 = 0.00010556,
+        m = bodyMass,
+        I_11 = bodyI11,
+        I_22 = bodyI22,
+        I_33 = bodyI33,
         I_21 = 0,
         I_31 = 0,
         I_32 = 0,

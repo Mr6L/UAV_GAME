@@ -95,6 +95,9 @@ k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
   SysplorerEmbeddedCoder.Sources.Constant lateralKdSignal(k = lateralPositionKD) 
     annotation(Placement(transformation(origin = {-560, 100}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
 k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
+  SysplorerEmbeddedCoder.Sources.Constant lateralGammaSignal(k = lateralPositionGamma) 
+    annotation(Placement(transformation(origin = {-560, 70}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
+k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
   SysplorerEmbeddedCoder.Sources.Constant lateralIntegralEnableSignal(k = lateralPositionIntegralEnableError) 
     annotation(Placement(transformation(origin = {-420, 160}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
 k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
@@ -115,6 +118,9 @@ k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
 k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
   SysplorerEmbeddedCoder.Sources.Constant heightKdSignal(k = heightKD) 
     annotation(Placement(transformation(origin = {-560, -200}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
+k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
+  SysplorerEmbeddedCoder.Sources.Constant heightGammaSignal(k = heightGamma) 
+    annotation(Placement(transformation(origin = {-560, -230}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
 k(Type(ref="double"),Dimension=1)),SampleTime(auto=true,group="D0")=0)));
   SysplorerEmbeddedCoder.Sources.Constant heightIntegralEnableSignal(k = heightIntegralEnableError) 
     annotation(Placement(transformation(origin = {-420, -140}, extent = {{-10, -10}, {10, 10}})), __MWORKS(BlockSystem(Instance(y(Type(ref="double"),Dimension=1),
@@ -245,12 +251,13 @@ k(Type(ref="double"),Dimension=1)),SampleTime(group="D0")=0)));
     parameter RealAuto lateralPositionKP = 0.4 "Position loop proportional gain, including angle conversion" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto lateralPositionKI = 0 "Position loop integral gain disabled for first version" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto lateralPositionKD = 0.3 "Position loop derivative gain, including angle conversion" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto lateralPositionGamma = 0.70 "Position derivative setpoint weighting; 1 tracks command velocity like the legacy PID, 0 differentiates measurement only" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto lateralPositionIntegralEnableError = 0.5 "Position integral separation threshold; increase during tuning if integral never becomes active" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto maxCommandedAngle = 15 / 57.3 "Outer-loop attitude command upper limit in rad" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto minCommandedAngle = -15 / 57.3 "Outer-loop attitude command lower limit in rad" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto lateralPositionKaw = 0 "Position anti-windup gain; zero because lateralPositionKI is zero in this version" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto lateralPositionLeakRate = 0 "Position integral leak; 0 disables leak" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
-    parameter RealAuto lateralPositionDerivativeFilterN = 10 "Position derivative filter coefficient N; tune lower, e.g. 5-20, after baseline validation" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto lateralPositionDerivativeFilterN = 5 "Position derivative filter coefficient N; tune lower, e.g. 5-20, after baseline validation" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
 
     parameter RealAuto attitudeKP = 8 "Attitude loop proportional gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto attitudeKI = 0 "Attitude loop integral gain kept zero in the first version" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
@@ -262,9 +269,10 @@ k(Type(ref="double"),Dimension=1)),SampleTime(group="D0")=0)));
     parameter RealAuto attitudeLeakRate = 0 "Attitude integral leak; 0 disables leak" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto attitudeDerivativeFilterN = 50 "Attitude derivative filter coefficient N; tune in 20-100 range after validation" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
 
-    parameter RealAuto heightKP = 4 "Height loop proportional gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightKP = 5 "Height loop proportional gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightKI = 0.3 "Height loop integral gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
-    parameter RealAuto heightKD = 10 "Height loop derivative gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightKD = 12 "Height loop derivative gain" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightGamma = 0.3 "Height derivative setpoint weighting; partial command derivative improves climb tracking while limiting derivative kick" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto hoverMass = 0.159504 + 4 * 0.000913171 "Effective vehicle mass used by hover feedforward; include body mass plus propeller masses in the current plant model" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto gravity = 9.81 "Gravity used by the hover feedforward calculation" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto liftCoefficient = 0.002 "Rotor lift coefficient used by the plant force model: thrust = liftCoefficient * speed^2" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
@@ -273,9 +281,9 @@ k(Type(ref="double"),Dimension=1)),SampleTime(group="D0")=0)));
     parameter RealAuto heightOutputMax = 12 "Height PID correction upper limit, not total thrust; total command is hoverThrust + heightPID.u" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightOutputMin = -0.9 * hoverThrust "Height PID correction lower limit; keeps hoverThrust + heightPID.u positive so rotor directions are not reversed" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightIntegralEnableError = 10.0 "Height integral separation threshold. Keep large during debugging so integral can remove steady error, then tighten gradually." annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
-    parameter RealAuto heightKaw = 1 "Height anti-windup back-calculation gain; heightKI is nonzero" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightKaw = 0.2 "Height anti-windup back-calculation gain; heightKI is nonzero" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
     parameter RealAuto heightLeakRate = 0 "Height integral leak; 0 disables leak" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
-    parameter RealAuto heightDerivativeFilterN = 50 "Height derivative filter coefficient N" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
+    parameter RealAuto heightDerivativeFilterN = 1.5 "Height derivative filter coefficient N; lower value limits setpoint derivative kick" annotation(__MWORKS(BlockSystem(Type(inherit=InheritType.none,ref="double"))), HideResult=true);
   end ModelWorkspace;
 equation
   connect(yawCommand, yawPID.ref) annotation(Line(origin = {0, 0},
@@ -350,11 +358,11 @@ equation
   connect(betaOneSignal.y, yPositionPID.beta) annotation(Line(origin = {0, 0},
     points = {{-548.2, 390}, {-432, 390}, {-432, 51.3333}, {-261.8, 51.3333}},
     color = {0, 0, 0}));
-  connect(gammaZeroSignal.y, xPositionPID.gamma) annotation(Line(origin = {0, 0},
-    points = {{-548.2, 360}, {-432, 360}, {-432, 210}, {-261.8, 210}},
+  connect(lateralGammaSignal.y, xPositionPID.gamma) annotation(Line(origin = {0, 0},
+    points = {{-548.2, 70}, {-432, 70}, {-432, 210}, {-261.8, 210}},
     color = {0, 0, 0}));
-  connect(gammaZeroSignal.y, yPositionPID.gamma) annotation(Line(origin = {0, 0},
-    points = {{-548.2, 360}, {-432, 360}, {-432, 46.6667}, {-261.8, 46.6667}},
+  connect(lateralGammaSignal.y, yPositionPID.gamma) annotation(Line(origin = {0, 0},
+    points = {{-548.2, 70}, {-432, 70}, {-432, 46.6667}, {-261.8, 46.6667}},
     color = {0, 0, 0}));
   connect(lateralIntegralEnableSignal.y, xPositionPID.integralEnableError) annotation(Line(origin = {0, 0},
     points = {{-408.2, 160}, {-265.6, 160}, {-265.6, 205.333}, {-261.8, 205.333}},
@@ -404,8 +412,8 @@ equation
   connect(betaOneSignal.y, heightPID.beta) annotation(Line(origin = {0, 0},
     points = {{-548.2, 390}, {-432, 390}, {-432, -94.6667}, {-261.8, -94.6667}},
     color = {0, 0, 0}));
-  connect(gammaZeroSignal.y, heightPID.gamma) annotation(Line(origin = {0, 0},
-    points = {{-548.2, 360}, {-432, 360}, {-432, -99.3333}, {-261.8, -99.3333}},
+  connect(heightGammaSignal.y, heightPID.gamma) annotation(Line(origin = {0, 0},
+    points = {{-548.2, -230}, {-432, -230}, {-432, -99.3333}, {-261.8, -99.3333}},
     color = {0, 0, 0}));
   connect(heightIntegralEnableSignal.y, heightPID.integralEnableError) annotation(Line(origin = {0, 0},
     points = {{-408.2, -140}, {-265.6, -140}, {-265.6, -104}, {-261.8, -104}},
